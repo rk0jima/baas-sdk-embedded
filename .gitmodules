@@ -1,0 +1,9 @@
+[submodule "libs/json"]
+	path = libs/json
+	url = https://github.com/open-source-parsers/jsoncpp
+[submodule "libs/curlpp"]
+	path = libs/curlpp
+	url = https://github.com/jpbarrette/curlpp.git
+[submodule "libs/easyloggingpp"]
+	path = libs/easyloggingpp
+	url = https://github.com/muflihun/easyloggingpp

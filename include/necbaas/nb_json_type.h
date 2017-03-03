@@ -1,0 +1,31 @@
+/*
+ * COPYRIGHT (C) 2017 NEC CORPORATION
+ *
+ * ALL RIGHTS RESERVED BY NEC CORPORATION,  THIS PROGRAM
+ * MUST BE USED SOLELY FOR THE PURPOSE FOR WHICH IT WAS
+ * FURNISHED BY NEC CORPORATION,  NO PART OF THIS PROGRAM
+ * MAY BE REPRODUCED OR DISCLOSED TO OTHERS,  IN ANY FORM
+ * WITHOUT THE PRIOR WRITTEN PERMISSION OF NEC CORPORATION.
+ *
+ * NEC CONFIDENTIAL AND PROPRIETARY
+ */
+
+#ifndef NECBAAS_NBJSONTYPE_H
+#define NECBAAS_NBJSONTYPE_H
+
+namespace necbaas {
+
+/**
+ * Json値のタイプ.
+ */
+enum class NbJsonType {
+    NB_JSON_NULL,    /*!< NULL         */
+    NB_JSON_NUMBER,  /*!< 数値         */
+    NB_JSON_BOOLEAN, /*!< 真偽値       */
+    NB_JSON_STRING,  /*!< 文字列       */
+    NB_JSON_OBJECT,  /*!< オブジェクト */
+    NB_JSON_ARRAY,   /*!< 配列         */
+};
+}  // namespace necbaas
+
+#endif  // NECBAAS_NBJSONTYPE_H
