@@ -99,13 +99,13 @@ class NbUserEntity {
      */
     std::tm GetUpdatedTime() const;
   private:
-    std::string id_;            /*!< ユーザID */
-    std::string username_;      /*!< ユーザ名*/
-    std::string email_;         /*!< E-mailアドレス */
-    NbJsonObject options_;      /*!< オプション情報 */
-    NbJsonArray groups_;        /*!< ユーザが所属するグループ一覧 */
-    std::string created_time_;  /*!< ユーザの作成日時 */
-    std::string updated_time_;  /*!< ユーザの更新日時 */
+    std::string id_{};            /*!< ユーザID */
+    std::string username_{};      /*!< ユーザ名*/
+    std::string email_{};         /*!< E-mailアドレス */
+    NbJsonObject options_;        /*!< オプション情報 */
+    NbJsonArray groups_;          /*!< ユーザが所属するグループ一覧 */
+    std::string created_time_{};  /*!< ユーザの作成日時 */
+    std::string updated_time_{};  /*!< ユーザの更新日時 */
 };
 } //namespace necbaas
 #endif //NECBAAS_NBUSERENTITY_H

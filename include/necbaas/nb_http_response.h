@@ -83,7 +83,7 @@ class NbHttpResponse {
     void Dump() const;
 
    private:
-    int status_code_;                                 /*!< status-code   */
+    int status_code_{0};                              /*!< status-code   */
     std::string reason_phrase_;                       /*!< reason-phrase */
     std::multimap<std::string, std::string> headers_; /*!< header-field  */
     std::vector<char> body_;                          /*!< message-body  */

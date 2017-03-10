@@ -18,6 +18,7 @@
 #include <limits>
 #include <json/json.h>
 #include "necbaas/nb_json_type.h"
+#include "necbaas/internal/nb_logger.h"
 
 namespace necbaas {
 
@@ -83,8 +84,11 @@ class NbJsonArray {
     /**
      * 整数値取得.
      * Indexに対応するValueをint型で取得する。<br>
-     * 浮動小数点や桁あふれが発生した場合は不定値となる。<br>
-     * Indexに対応するValueが存在しない、Valueが数値型でない場合は、default_valueを返却する
+     * 浮動小数点は丸められる。<br>
+     * 以下の場合は、default_valueを返却する。<br>
+     * - Indexに対応するValueが存在しない
+     * - Valueが数値型でない
+     * - Valueがintの範囲外 
      * @param[in]   index           Index
      * @param[in]   default_value   取得できなかったときに返す値
      * @return      Value
@@ -95,7 +99,10 @@ class NbJsonArray {
      * 64bit整数値取得.
      * Indexに対応するValueをint64_t型で取得する。<br>
      * 浮動小数点は丸められる。<br>
-     * Indexに対応するValueが存在しない、Valueが数値型でない場合は、default_valueを返却する
+     * 以下の場合は、default_valueを返却する。<br>
+     * - Indexに対応するValueが存在しない
+     * - Valueが数値型でない
+     * - Valueがint64_tの範囲外 
      * @param[in]   index           Index
      * @param[in]   default_value   取得できなかったときに返す値
      * @return      Value
@@ -105,7 +112,9 @@ class NbJsonArray {
     /**
      * 浮動小数点値取得.
      * Indexに対応するValueをdouble型で取得する。<br>
-     * Indexに対応するValueが存在しない、Valueが数値型でない場合は、default_valueを返却する
+     * 以下の場合は、default_valueを返却する。<br>
+     * - Indexに対応するValueが存在しない
+     * - Valueが数値型でない
      * @param[in]   index           Index
      * @param[in]   default_value   取得できなかったときに返す値
      * @return      Value
@@ -115,7 +124,9 @@ class NbJsonArray {
     /**
      * 真偽値取得.
      * Indexに対応するValueをbool型で取得する。<br>
-     * Indexに対応するValueが存在しない、Valueが真偽値型でない場合は、default_valueを返却する
+     * 以下の場合は、default_valueを返却する。<br>
+     * - Indexに対応するValueが存在しない
+     * - Valueが真偽値型でない
      * @param[in]   index           Index
      * @param[in]   default_value   取得できなかったときに返す値
      * @return      Value
@@ -125,7 +136,9 @@ class NbJsonArray {
     /**
      * 文字列取得.
      * indexに対応するValueをstd::string型で取得する。<br>
-     * indexに対応するValueが存在しない、Valueが文字列型でない場合は、default_valueを返却する
+     * 以下の場合は、default_valueを返却する。<br>
+     * - Indexに対応するValueが存在しない
+     * - Valueが文字列型でない
      * @param[in]   index           Index
      * @param[in]   default_value   取得できなかったときに返す値
      * @return      Value
@@ -135,7 +148,9 @@ class NbJsonArray {
     /**
      * Jsonオブジェクト取得.
      * Indexに対応するValueをNbJsonObject型で取得する。<br>
-     * Indexに対応するValueが存在しない、ValueがJsonオブジェクト型でない場合は、空のJsonオブジェクトが返却される。
+     * 以下の場合は、空のJsonオブジェクトを返却する。<br>
+     * - Indexに対応するValueが存在しない
+     * - ValueがJsonオブジェクト型でない
      * @param[in]   index           Index
      * @return      Value
      */
@@ -144,7 +159,9 @@ class NbJsonArray {
     /**
      * Json配列取得.
      * Indexに対応するValueをNbJsonArray型で取得する。<br>
-     * Indexに対応するValueが存在しない、ValueがJson配列型でない場合は、空のJson配列が返却される。
+     * 以下の場合は、空のJson配列を返却する。<br>
+     * - Indexに対応するValueが存在しない
+     * - ValueがJson配列型でない
      * @param[in]   index           Index
      * @return      Value
      */
@@ -153,8 +170,11 @@ class NbJsonArray {
     /**
      * 整数値リスト取得.
      * Json配列に設定されたデータ型が全て数値型の場合に使用可能。<br>
-     * 浮動小数点や桁あふれが発生した場合は不定値となる。<br>
-     * Indexに対応するValueが数値型でない場合は、default_valueを設定する。<br>
+     * 浮動小数点は丸められる。<br>
+     * 以下の場合は、該当Indexにdefault_valueを設定する。<br>
+     * - Valueが数値型でない
+     * - Valueがintの範囲外 
+     *
      * OUTパラメータとして使用可能な型は以下の通り。
      * - コンテナ : std::vector<int>, std::list<int>
      * @param[out]  out_container   STLコンテナ。nullptrの場合は処理を行わない。
@@ -168,8 +188,11 @@ class NbJsonArray {
     /**
      * 64bit整数値リスト取得.
      * Json配列に設定されたデータ型が全て数値型の場合に使用可能。<br>
-     * 浮動小数点の場合は丸められる。<br>
-     * Indexに対応するValueが数値型でない場合は、default_valueを設定する。<br>
+     * 浮動小数点は丸められる。<br>
+     * 以下の場合は、該当Indexにdefault_valueを設定する。<br>
+     * - Valueが数値型でない
+     * - Valueがint64_tの範囲外 
+     *
      * OUTパラメータとして使用可能な型は以下の通り。
      * - コンテナ : std::vector<int64_t>, std::list<int64_t>
      * @param[out]  out_container   STLコンテナ。nullptrの場合は処理を行わない。
@@ -183,7 +206,9 @@ class NbJsonArray {
     /**
      * 浮動小数点値リスト取得.
      * Json配列に設定されたデータ型が全て数値型の場合に使用可能。<br>
-     * Indexに対応するValueが数値型でない場合は、default_valueを設定する。<br>
+     * 以下の場合は、該当Indexにdefault_valueを設定する。<br>
+     * - Valueが数値型でない
+     *
      * OUTパラメータとして使用可能な型は以下の通り。
      * - コンテナ : std::vector<double>, std::list<double>
      * @param[out]  out_container   STLコンテナ。nullptrの場合は処理を行わない。
@@ -197,7 +222,9 @@ class NbJsonArray {
     /**
      * 真偽値リスト取得.
      * Json配列に設定されたデータ型が全て真偽値型の場合に使用可能。<br>
-     * Indexに対応するValueが真偽値型でない場合は、default_valueを設定する。<br>
+     * 以下の場合は、該当Indexにdefault_valueを設定する。<br>
+     * - Valueが真偽値型でない
+     *
      * OUTパラメータとして使用可能な型は以下の通り。
      * - コンテナ : std::vector<bool>, std::list<bool>
      * @param[out]  out_container   STLコンテナ。nullptrの場合は処理を行わない。
@@ -211,7 +238,9 @@ class NbJsonArray {
     /**
      * 文字列リスト取得.
      * Json配列に設定されたデータ型が全て文字列型の場合に使用可能。<br>
-     * Indexに対応するValueが文字列型でない場合は、default_valueを設定する。<br>
+     * 以下の場合は、該当Indexにdefault_valueを設定する。<br>
+     * - Valueが文字列型でない
+     *
      * OUTパラメータとして使用可能な型は以下の通り。
      * - コンテナ : std::vector<std::string>, std::list<std::string>
      * @param[out]  out_container   STLコンテナ。nullptrの場合は処理を行わない。
@@ -243,7 +272,9 @@ class NbJsonArray {
      * - bool
      * - std::string
      *
-     * NbJsonObject, NbJsonArray の設定は、 PutJsonObject(), PutJsonArray() を使用すること。
+     * NbJsonObject, NbJsonArray の設定は、 PutJsonObject(), PutJsonArray() を使用すること。<br>
+     *
+     * 使用可能な配列の最大サイズは、UINT_MAXである。UINT_MAX-1を超えるIndexを指定した場合は無視される。
      * @code
        json[0] = 123;
        json[10] = "value";
@@ -262,25 +293,37 @@ class NbJsonArray {
     /**
      * Jsonオブジェクト設定.
      * Indexに対応するValueをNbJsonObject型で設定する。
+     * IndexにUINT_MAXが設定された場合はfalseを返す。
      * @param[in]   index           Index
      * @param[in]   json_object     Value
+     * @return  処理結果
+     * @retval  true    処理成功
+     * @retval  false   処理失敗
      */
-    void PutJsonObject(unsigned int index, const NbJsonObject &json_object);
+    bool PutJsonObject(unsigned int index, const NbJsonObject &json_object);
 
     /**
      * Json配列設定.
      * Indexに対応するValueをNbJsonArray型で設定する。
+     * IndexにUINT_MAXが設定された場合はfalseを返す。
      * @param[in]   index           Index
      * @param[in]   json_array      Value
+     * @return  処理結果
+     * @retval  true    処理成功
+     * @retval  false   処理失敗
      */
-    void PutJsonArray(unsigned int index, const NbJsonArray &json_array);
+    bool PutJsonArray(unsigned int index, const NbJsonArray &json_array);
 
     /**
      * null設定.
      * Indexに対応するValueにnullを設定する。
+     * IndexにUINT_MAXが設定された場合はfalseを返す。
      * @param[in]   index           Index
+     * @return  処理結果
+     * @retval  true    処理成功
+     * @retval  false   処理失敗
      */
-    void PutNull(unsigned int index);
+    bool PutNull(unsigned int index);
 
     /**
      * 配列末尾に追加.
@@ -346,7 +389,7 @@ class NbJsonArray {
      * Json配列のサイズを取得する。
      * @return      Json配列サイズ
      */
-    int GetSize() const;
+    unsigned int GetSize() const;
 
     /**
      * オブジェクト空確認.
@@ -417,9 +460,15 @@ class NbJsonArray {
             return;
         }
         out_container->clear();
-        for (auto value : value_) {
-            if ((value.*is_type)()) {
-                out_container->push_back((value.*as_type)());
+        for (unsigned int i = 0; i < GetSize(); ++i) {
+            if ((value_[i].*is_type)()) {
+                try {
+                    out_container->push_back((value_[i].*as_type)());
+                }
+                catch (const Json::LogicError &ex) {
+                    NBLOG(ERROR) << ex.what();
+                    out_container->push_back(default_value);
+                }
             } else {
                 out_container->push_back(default_value);
             }

@@ -25,6 +25,9 @@ namespace necbaas {
  * @class NbObject nb_object.h "necbaas/nb_object.h"
  * オブジェクト管理クラス.
  * オブジェクトストレージに格納される Json オブジェクトデータ1件を表現する。<br>
+ * JsonオブジェクトのFieldに予約名（_id, createdAt, updatedAt, ACL, etag, _deleted）の設定が可能であるが、
+ * Saveメソッド実行時に予約名は削除される。<br>
+ * オブジェクトIDや作成日時を変更したい場合は、対応するSetメソッドを使用すること。<br>
  *
  * <b>本クラスのインスタンスはスレッドセーフではない</b>
  */
@@ -195,7 +198,8 @@ class NbObject : public NbJsonObject {
 
     /**
      * オブジェクトデータ設定.
-     * Jsonオブジェクトを設定する。
+     * Jsonオブジェクトを設定する。<br>
+     * Jsonオブジェクトデータは、渡されたJsonオブジェクトに差し替えられる（現在設定されているデータは破棄される）
      * @param[in]   json      Jsonオブジェクト
      */
     void SetObjectData(const NbJsonObject &json);

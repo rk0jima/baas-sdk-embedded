@@ -53,7 +53,7 @@ class NbQuery {
     /**
      * 一致条件を追加する.
      * valueに使用できる型は以下<br>
-     * int, unsigned int, int64_t, uint64_t, double, bool, std::string, NbJsonObject, NbJsonArray<br>
+     * int, int64_t, double, bool, std::string, NbJsonObject, NbJsonArray<br>
      * keyが空文字の場合は無視する。
      * @param[in]   key     キー
      * @param[in]   value   値
@@ -74,7 +74,7 @@ class NbQuery {
     /**
      * 小なり条件を追加する.
      * valueに使用できる型は以下<br>
-     * int, unsigned int, int64_t, uint64_t, double, bool, std::string, NbJsonObject, NbJsonArray<br>
+     * int, int64_t, double, bool, std::string, NbJsonObject, NbJsonArray<br>
      * keyが空文字の場合は無視する。
      * @param[in]   key     キー
      * @param[in]   value   値
@@ -88,7 +88,7 @@ class NbQuery {
     /**
      * 小なりまたは等しいを追加する.
      * valueに使用できる型は以下<br>
-     * int, unsigned int, int64_t, uint64_t, double, bool, std::string, NbJsonObject, NbJsonArray<br>
+     * int, int64_t, double, bool, std::string, NbJsonObject, NbJsonArray<br>
      * keyが空文字の場合は無視する。
      * @param[in]   key     キー
      * @param[in]   value   値
@@ -102,7 +102,7 @@ class NbQuery {
     /**
      * 大なり条件を追加する.
      * valueに使用できる型は以下<br>
-     * int, unsigned int, int64_t, uint64_t, double, bool, std::string, NbJsonObject, NbJsonArray<br>
+     * int, int64_t, double, bool, std::string, NbJsonObject, NbJsonArray<br>
      * keyが空文字の場合は無視する。
      * @param[in]   key     キー
      * @param[in]   value   値
@@ -116,7 +116,7 @@ class NbQuery {
     /**
      * 大なりまたは等しいを追加する.
      * valueに使用できる型は以下<br>
-     * int, unsigned int, int64_t, uint64_t, double, bool, std::string, NbJsonObject, NbJsonArray<br>
+     * int, int64_t, double, bool, std::string, NbJsonObject, NbJsonArray<br>
      * keyが空文字の場合は無視する。
      * @param[in]   key     キー
      * @param[in]   value   値
@@ -130,7 +130,7 @@ class NbQuery {
     /**
      * 不一致条件を追加する.
      * valueに使用できる型は以下<br>
-     * int, unsigned int, int64_t, uint64_t, double, bool, std::string, NbJsonObject, NbJsonArray<br>
+     * int, int64_t, double, bool, std::string, NbJsonObject, NbJsonArray<br>
      * keyが空文字の場合は無視する。
      * @param[in]   key     キー
      * @param[in]   value   値

@@ -11,15 +11,11 @@
  */
 
 #include "necbaas/internal/nb_rest_executor.h"
-#include <string>
-#include <functional>
 #include <curlpp/Options.hpp>
 #include "necbaas/internal/nb_logger.h"
-#include "necbaas/internal/nb_http_handler.h"
 #include "necbaas/internal/nb_http_file_upload_handler.h"
 #include "necbaas/internal/nb_http_file_download_handler.h"
 #include "necbaas/internal/nb_utility.h"
-#include "necbaas/internal/nb_constants.h"
 
 namespace necbaas {
 
@@ -186,7 +182,7 @@ bool NbRestExecutor::ValidateFileSize(const NbHttpResponse &response, const stri
     return (header_value == file_size);
 }
 
-NbResult<NbHttpResponse> NbRestExecutor::ExecuteJsonRequest(const NbHttpRequest &request, int timeout) {
+NbResult<NbHttpResponse> NbRestExecutor::ExecuteRequest(const NbHttpRequest &request, int timeout) {
     NBLOG(DEBUG) << "Execute json request.";
     request.Dump();
 
@@ -289,8 +285,8 @@ NbResult<NbHttpResponse> NbRestExecutor::MakeResult(NbHttpHandler &http_handler,
         return result;
     }
 
-    // 200OK以外は、RestErrorに設定
-    if (result.GetSuccessData().GetStatusCode() != 200) {
+    // 200台以外は、RestErrorに設定
+    if (result.GetSuccessData().GetStatusCode() / 100 != 2) {
         result.SetResultCode(NbResultCode::NB_ERROR_RESPONSE);
         NbRestError rest_error;
         rest_error.status_code = result.GetSuccessData().GetStatusCode();

@@ -27,6 +27,15 @@ namespace necbaas {
 class NbSessionToken {
   public:
     /**
+     * 有効期限切れ確認.
+     * @param[in]   expire_at       有効期限
+     * @return  処理結果
+     * @retval  true    有効期限切れ
+     * @retval  false   有効期限内
+     */
+    static bool IsExpired(std::time_t expire_at);
+
+    /**
      * コンストラクタ.
      */
     NbSessionToken();
@@ -79,8 +88,8 @@ class NbSessionToken {
      */
     void ClearSessionToken();
   private:
-    std::string session_token_;          /*!< セッショントークン文字列 */
-    std::time_t expire_at_;                   /*!< 有効期限                 */
+    std::string session_token_{};        /*!< セッショントークン文字列 */
+    std::time_t expire_at_{0};           /*!< 有効期限                 */
     NbUserEntity session_user_entity_;   /*!< ユーザ情報               */
 };
 } //namespace necbaas

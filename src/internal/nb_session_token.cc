@@ -25,6 +25,10 @@ NbSessionToken::NbSessionToken(const string &session_token, time_t expire_at) {
 
 NbSessionToken::~NbSessionToken() {}
 
+bool NbSessionToken::IsExpired(std::time_t expire_at) {
+    return (expire_at <= std::time(nullptr));
+}
+
 void NbSessionToken::SetSessionToken(const string &session_token, time_t expire_at) {
     session_token_ = session_token;
     expire_at_ = expire_at;

@@ -55,7 +55,7 @@ class NbHttpFileDownloadHandler : public NbHttpHandler {
     /**
      * 受信データ書込み関数.
      * 受信データを指定ファイルに書込む。
-     * ステータスコードが200以外の場合は、基底クラスのメソッドで処理する。
+     * ステータスコードが200台以外の場合は、基底クラスのメソッドで処理する。
      * @param[in]   buffer          受信データバッファ
      * @param[in]   size            データサイズ
      * @param[in]   nmemb           データ個数

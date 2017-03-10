@@ -11,8 +11,6 @@
  */
 
 #include "necbaas/internal/nb_utility.h"
-#include <time.h>
-#include <cstring>
 #include <fstream>
 #include "necbaas/internal/nb_logger.h"
 

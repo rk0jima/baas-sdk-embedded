@@ -66,7 +66,7 @@ NbResult<NbObject> NbObjectBucket::GetObject(const string &object_id, bool delet
         result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
         return result;
     }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteJsonRequest(request, timeout_);
+    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout_);
     service_->PushRestExecutor(executor);
 
     result.SetResultCode(rest_result.GetResultCode());
@@ -114,7 +114,7 @@ NbResult<vector<NbObject>> NbObjectBucket::Query(const NbQuery &query, int *coun
         result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
         return result;
     }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteJsonRequest(request, timeout_);
+    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout_);
     service_->PushRestExecutor(executor);
 
     result.SetResultCode(rest_result.GetResultCode());

@@ -11,8 +11,6 @@
  */
 
 #include "necbaas/nb_user.h"
-#include <ctime>
-#include "necbaas/internal/nb_constants.h"
 #include "necbaas/internal/nb_logger.h"
 
 namespace necbaas {
@@ -85,7 +83,7 @@ NbResult<NbUser> NbUser::Login(const shared_ptr<NbService> &service, const strin
         result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
         return result;
     }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteJsonRequest(request, timeout);
+    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout);
     service->PushRestExecutor(executor);
 
     result.SetResultCode(rest_result.GetResultCode());
@@ -134,7 +132,7 @@ NbResult<NbUser> NbUser::Logout(const shared_ptr<NbService> &service, int timeou
         result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
         return result;
     }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteJsonRequest(request, timeout);
+    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout);
     service->PushRestExecutor(executor);
 
     result.SetResultCode(rest_result.GetResultCode());
@@ -159,14 +157,9 @@ NbResult<NbUser> NbUser::Logout(const shared_ptr<NbService> &service, int timeou
 
 bool NbUser::IsLoggedIn(const shared_ptr<NbService> &service) {
     NbSessionToken session_token = service->GetSessionToken();
-    if (session_token.GetSessionToken().empty()) {
-        return false;
-    }
 
-    if (session_token.GetExpireAt() < std::time(nullptr)) {
-        return false;
-    }
-    return true;
+    return (!session_token.GetSessionToken().empty() &&
+            !NbSessionToken::IsExpired(session_token.GetExpireAt()));
 }
 
 time_t NbUser::GetSessionTokenExpiration(const shared_ptr<NbService> &service) {
@@ -180,7 +173,7 @@ const string &NbUser::GetSessionToken(const shared_ptr<NbService> &service) {
 }
 
 string NbUser::ExportCurrentLogin(const shared_ptr<NbService> &service) {
-    if (NbUser::IsLoggedIn(service)) {
+    if (!IsLoggedIn(service)) {
         NBLOG(ERROR) << "Not logged in.";
         return "";
     }
@@ -201,7 +194,7 @@ NbResultCode NbUser::ImportCurrentLogin(const shared_ptr<NbService> &service, co
         return NbResultCode::NB_ERROR_INVALID_ARGUMENT;
     }
 
-    if (json.GetInt64(kKeyExpire) < std::time(nullptr)) {
+    if (NbSessionToken::IsExpired(static_cast<std::time_t>(json.GetInt64(kKeyExpire)))) {
         NBLOG(ERROR) << "Session token is expired.";
         return NbResultCode::NB_ERROR_SESSION_EXPIRED;
     }

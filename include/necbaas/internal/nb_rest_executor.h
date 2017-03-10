@@ -67,12 +67,12 @@ public:
                                                  int timeout = kRestTimeoutDefault);
 
     /**
-     * REST実行(Jsonデータの送受信).
+     * REST実行(データの送受信).
      * @param[in]   request         HTTPリクエスト
      * @param[in]   timeout         RESTタイムアウト(秒)
      * @return      処理結果
      */
-    NbResult<NbHttpResponse> ExecuteJsonRequest(const NbHttpRequest &request, int timeout = kRestTimeoutDefault);
+    NbResult<NbHttpResponse> ExecuteRequest(const NbHttpRequest &request, int timeout = kRestTimeoutDefault);
 private:
     curlpp::Easy curlpp_easy_;    /*!< cURLppインスタンス */
 

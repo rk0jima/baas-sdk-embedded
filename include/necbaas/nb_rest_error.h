@@ -20,7 +20,7 @@ namespace necbaas {
 /**
  * @struct NbRestError nb_rest_error.h "necbaas/nb_rest_error.h"
  * RESTエラー構造体.
- * RESTがエラー（ステータスコードが200以外）の場合のエラー情報通知用.<br>
+ * RESTがエラー（ステータスコードが200台以外）の場合のエラー情報通知用.<br>
  * reasonにはレスポンスのボディ部が文字列で設定される.
  */
 struct NbRestError {

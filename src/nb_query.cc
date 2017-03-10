@@ -102,6 +102,10 @@ NbQuery &NbQuery::And(const std::vector<NbQuery> queries) {
 }
 
 NbQuery &NbQuery::ConcatQueries(const string &op, vector<NbQuery> queries) {
+    if (queries.empty()) {
+        return *this;
+    }
+
     Json::Value json;
     json[0] = conditions_;
     for (int i = 0; i < queries.size(); ++i) {

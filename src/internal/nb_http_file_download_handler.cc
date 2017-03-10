@@ -29,7 +29,7 @@ bool NbHttpFileDownloadHandler::IsError() const { return !file_stream_; }
 size_t NbHttpFileDownloadHandler::WriteCallback(char *buffer, size_t size, size_t nmemb) {
     size_t write_size = size * nmemb;
 
-    if (GetStatusCode() != 200) {
+    if (GetStatusCode() / 100 != 2) {
         // エラーの場合は基底クラスを実行
         NBLOG(ERROR) << "response failed code: " << tmp_status_code_;
         return NbHttpHandler::WriteCallback(buffer, size, nmemb);

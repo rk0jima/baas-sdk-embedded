@@ -11,7 +11,6 @@
  */
 
 #include "necbaas/nb_service.h"
-#include <mutex>
 #include <curlpp/cURLpp.hpp>
 #include "necbaas/internal/nb_logger.h"
 

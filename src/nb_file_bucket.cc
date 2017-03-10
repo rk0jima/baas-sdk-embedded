@@ -11,9 +11,7 @@
  */
 
 #include "necbaas/nb_file_bucket.h"
-#include <cstdlib>
 #include <curlpp/cURLpp.hpp>
-#include "necbaas/internal/nb_http_request_factory.h"
 #include "necbaas/internal/nb_logger.h"
 
 namespace necbaas {
@@ -284,7 +282,7 @@ NbResult<NbJsonObject> NbFileBucket::DeleteFile(const string &file_name, const s
         result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
         return result;
     }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteJsonRequest(request, timeout_);
+    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout_);
     service_->PushRestExecutor(executor);
 
     result.SetResultCode(rest_result.GetResultCode());
@@ -336,7 +334,7 @@ NbResult<vector<NbFileMetadata>> NbFileBucket::GetFiles(bool published, bool del
         result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
         return result;
     }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteJsonRequest(request, timeout_);
+    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout_);
     service_->PushRestExecutor(executor);
 
     result.SetResultCode(rest_result.GetResultCode());

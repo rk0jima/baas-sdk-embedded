@@ -65,8 +65,13 @@ NbHttpResponse NbHttpHandler::Parse() {
             string header_key = header_line->substr(0, index);
             // value
             string header_value = header_line->substr(index + 1);
-            // rmove \r\n at the tail
-            header_value = header_value.substr(0, header_value.length() - 2);
+            // remove \r\n at the tail
+            if (header_value.length() >= 2) {
+                header_value = header_value.substr(0, header_value.length() - 2);
+            } else {
+                //異常値(改行コード(CRLF)は必須)
+                header_value.clear();
+            }
             // 前方スペースを削除
             string::size_type not_space = header_value.find_first_not_of(' ');
             if (not_space == string::npos) {
@@ -87,11 +92,22 @@ NbHttpResponse NbHttpHandler::Parse() {
 vector<string>::iterator NbHttpHandler::SearchStatusLine() {
     //ステータスラインを後方検索
     // PROXYを使用する場合、HTTP CONNECTの情報も取得してしまうため
-    vector<string>::iterator it = response_headers_.end();
-    for (auto header_line = response_headers_.begin(); header_line != response_headers_.end(); ++header_line) {
+    auto it = response_headers_.end();
+
+    if (response_headers_.empty()) {
+        return it;
+    }
+    
+    for (auto header_line = response_headers_.end() - 1; ; --header_line) {
         if ((header_line->length() > kSizeStatusLineMarker + kStatusCodeSize) &&
             (header_line->substr(0, kSizeStatusLineMarker) == kStatusCodeLineMarker)) {
             it = header_line;
+            break;
+        }
+
+        // デクリメント前に脱出条件評価
+        if (header_line == response_headers_.begin()) {
+            break;
         }
     }
 
@@ -106,7 +122,7 @@ vector<string>::iterator NbHttpHandler::ParseStatusLine(int *status_code, string
         return status_line;
     }
 
-    string statusCodeStr = status_line->substr(kSizeStatusLineMarker, kSizeStatusLineMarker + kStatusCodeSize);
+    string statusCodeStr = status_line->substr(kSizeStatusLineMarker, kStatusCodeSize);
     if (status_code) {
         *status_code = std::atoi(statusCodeStr.c_str());
     }
@@ -114,6 +130,14 @@ vector<string>::iterator NbHttpHandler::ParseStatusLine(int *status_code, string
     if (reason_phrase && (status_line->length() > kSizeStatusLineMarker + kStatusCodeSize + 1) &&
         ((*status_line)[kSizeStatusLineMarker + kStatusCodeSize] == ' ')) {
         *reason_phrase = status_line->substr(kSizeStatusLineMarker + kStatusCodeSize + 1);
+        // remove \r\n at the tail
+        if (reason_phrase->length() >= 2) {
+            *reason_phrase = reason_phrase->substr(0, reason_phrase->length() - 2);
+        } else {
+            // 異常値(改行コード(CRLF)は必須)
+            // ただし、ステータスコードの取得は成功とする
+            reason_phrase->clear();
+        }
     }
 
     return ++status_line;

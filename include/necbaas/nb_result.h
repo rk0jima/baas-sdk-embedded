@@ -50,7 +50,7 @@ class NbResult {
     /**
      * 処理結果成功判定.
      * @return  判定結果
-     * @retval  true    処理成功
+     * @retval  true    処理成功(ステータスコードが200台)
      * @retval  false   処理失敗
      */
     bool IsSuccess() const {
@@ -60,8 +60,8 @@ class NbResult {
     /**
      * RESTエラー判定.
      * @return  判定結果
-     * @retval  true    RESTのステータスコードが200以外
-     * @retval  false   ステータスコードが200、REST未実行
+     * @retval  true    RESTのステータスコードが200台以外
+     * @retval  false   ステータスコードが200台、REST未実行
      */
     bool IsRestError() const {
         return (result_code_ == NbResultCode::NB_ERROR_RESPONSE);

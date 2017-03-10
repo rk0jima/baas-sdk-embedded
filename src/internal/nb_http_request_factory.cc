@@ -22,12 +22,12 @@ using std::list;
 using std::multimap;
 
 NbHttpRequestFactory::NbHttpRequestFactory(const string &end_point_url, const string &tenant_id, const string &app_id,
-                                           const string &app_key, const string &sessnon_token, const string &proxy)
+                                           const string &app_key, const string &session_token, const string &proxy)
     : end_point_url_(end_point_url),
       tenant_id_(tenant_id),
       app_id_(app_id),
       app_key_(app_key),
-      sessnon_token_(sessnon_token),
+      session_token_(session_token),
       proxy_(proxy) {
     CheckParameter();
 }
@@ -114,8 +114,8 @@ NbHttpRequest NbHttpRequestFactory::Build() {
         headers_.insert(std::make_pair(kHeaderUserAgent, kHeaderUserAgentDefault));
     }
 
-    if (!session_none_ && !sessnon_token_.empty()) {
-        headers_.insert(std::make_pair(kHeaderSessionToken, sessnon_token_));
+    if (!session_none_ && !session_token_.empty()) {
+        headers_.insert(std::make_pair(kHeaderSessionToken, session_token_));
     }
 
     auto header_list = list<string>();
@@ -133,7 +133,7 @@ NbResultCode NbHttpRequestFactory::GetError() const { return error_; }
 
 bool NbHttpRequestFactory::IsError() const { return (error_ != NbResultCode::NB_OK); }
 
-NbResultCode NbHttpRequestFactory::CheckParameter() {
+void NbHttpRequestFactory::CheckParameter() {
     if (end_point_url_.empty()) {
         NBLOG(ERROR) << "End point URL is empty.";
         error_ = NbResultCode::NB_ERROR_ENDPOINT_URL;

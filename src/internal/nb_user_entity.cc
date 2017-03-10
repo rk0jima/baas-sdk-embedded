@@ -11,7 +11,6 @@
  */
 
 #include "necbaas/internal/nb_user_entity.h"
-#include <cstring>
 #include "necbaas/internal/nb_constants.h"
 #include "necbaas/internal/nb_utility.h"
 

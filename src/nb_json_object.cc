@@ -56,7 +56,12 @@ vector<string> NbJsonObject::GetKeySet() const {
 int NbJsonObject::GetInt(const string &key, int default_value) const {
     int ret = default_value;
     if (value_.isMember(key) && value_[key].isNumeric()) {
-        ret = (int)value_[key].asInt();
+        try {
+            ret = (int)value_[key].asInt();
+        }
+        catch (const Json::LogicError &ex) {
+            NBLOG(ERROR) << ex.what(); 
+        }
     }
     return ret;
 }
@@ -64,7 +69,12 @@ int NbJsonObject::GetInt(const string &key, int default_value) const {
 int64_t NbJsonObject::GetInt64(const string &key, int64_t default_value) const {
     int64_t ret = default_value;
     if (value_.isMember(key) && value_[key].isNumeric()) {
-        ret = (int64_t)value_[key].asInt64();
+        try {
+            ret = (int64_t)value_[key].asInt64();
+        }
+        catch (const Json::LogicError &ex) {
+            NBLOG(ERROR) << ex.what();
+        }
     }
     return ret;
 }
@@ -138,6 +148,10 @@ void NbJsonObject::PutNull(const string &key) {
     if (!key.empty()) {
         value_[key] = Json::Value::null;
     }
+}
+
+int NbJsonObject::GetSize() const {
+    return value_.size();
 }
 
 bool NbJsonObject::IsEmpty() const {

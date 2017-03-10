@@ -76,8 +76,11 @@ class NbJsonObject {
     /**
      * 整数値取得.
      * Keyに対応するValueをint型で取得する。<br>
-     * 浮動小数点や桁あふれが発生した場合は不定値となる。<br>
-     * Keyに対応するValueが存在しない、Valueが数値型でない場合は、default_valueを返却する
+     * 浮動小数点は丸められる。<br>
+     * 以下の場合は、default_valueを返却する。<br>
+     * - Keyに対応するValueが存在しない
+     * - Valueが数値型でない
+     * - Valueがintの範囲外
      * @param[in]   key             Key
      * @param[in]   default_value   取得できなかったときに返す値
      * @return      Value
@@ -88,7 +91,10 @@ class NbJsonObject {
      * 64bit整数値取得.
      * Keyに対応するValueをint64_t型で取得する。<br>
      * 浮動小数点は丸められる。<br>
-     * Keyに対応するValueが存在しない、Valueが数値型でない場合は、default_valueを返却する
+     * 以下の場合は、default_valueを返却する。<br>
+     * - Keyに対応するValueが存在しない
+     * - Valueが数値型でない
+     * - Valueがint64_tの範囲外
      * @param[in]   key             Key
      * @param[in]   default_value   取得できなかったときに返す値
      * @return      Value
@@ -98,7 +104,9 @@ class NbJsonObject {
     /**
      * 浮動小数点値取得.
      * Keyに対応するValueをdouble型で取得する。<br>
-     * Keyに対応するValueが存在しない、Valueが数値型でない場合は、default_valueを返却する
+     * 以下の場合は、default_valueを返却する。<br>
+     * - Keyに対応するValueが存在しない
+     * - Valueが数値型でない
      * @param[in]   key             Key
      * @param[in]   default_value   取得できなかったときに返す値
      * @return      Value
@@ -108,7 +116,9 @@ class NbJsonObject {
     /**
      * 真偽値取得.
      * Keyに対応するValueをbool型で取得する。<br>
-     * Keyに対応するValueが存在しない、Valueが真偽値型でない場合は、default_valueを返却する
+     * 以下の場合は、default_valueを返却する。<br>
+     * - Keyに対応するValueが存在しない
+     * - Valueが真偽値型でない
      * @param[in]   key             Key
      * @param[in]   default_value   取得できなかったときに返す値
      * @return      Value
@@ -118,7 +128,9 @@ class NbJsonObject {
     /**
      * 文字列取得.
      * Keyに対応するValueをstd::string型で取得する。<br>
-     * Keyに対応するValueが存在しない、Valueが文字列型でない場合は、default_valueを返却する
+     * 以下の場合は、default_valueを返却する。<br>
+     * - Keyに対応するValueが存在しない
+     * - Valueが文字列型でない
      * @param[in]   key             Key
      * @param[in]   default_value   取得できなかったときに返す値
      * @return      Value
@@ -128,7 +140,9 @@ class NbJsonObject {
     /**
      * Jsonオブジェクト取得.
      * Keyに対応するValueをNbJsonObject型で取得する。<br>
-     * Keyに対応するValueが存在しない、ValueがJsonオブジェクト型でない場合は、空のJsonオブジェクトが返却される。
+     * 以下の場合は、空のJsonオブジェクトを返却する。<br>
+     * - Keyに対応するValueが存在しない
+     * - ValueがJsonオブジェクト型でない
      * @param[in]   key             Key
      * @return      Value
      */
@@ -137,7 +151,9 @@ class NbJsonObject {
     /**
      * Json配列取得.
      * Keyに対応するValueをNbJsonArray型で取得する。<br>
-     * Keyに対応するValueが存在しない、ValueがJson配列型でない場合は、空のJson配列が返却される。
+     * 以下の場合は、空のJson配列を返却する。<br>
+     * - Keyに対応するValueが存在しない
+     * - ValueがJson配列型でない
      * @param[in]   key             Key
      * @return      Value
      */
@@ -205,6 +221,13 @@ class NbJsonObject {
      * @param[in]   key             Key
      */
     void PutNull(const std::string &key);
+
+    /**
+     * サイズ取得.
+     * Jsonオブジェクトに存在するKey-Valueセットの数を取得する。
+     * @return      Key-Valueセットの数
+     */
+    int GetSize() const;
 
     /**
      * オブジェクト空確認.

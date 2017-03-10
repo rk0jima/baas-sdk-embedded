@@ -11,8 +11,6 @@
  */
 
 #include "necbaas/nb_acl.h"
-#include "necbaas/nb_json_array.h"
-#include "necbaas/internal/nb_constants.h"
 
 namespace necbaas {
 

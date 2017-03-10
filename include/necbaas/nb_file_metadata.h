@@ -109,15 +109,15 @@ class NbFileMetadata {
     bool IsCacheDisabled() const;
 
    private:
-    std::string file_name_;    /*!< ファイル名 */
-    std::string content_type_; /*!< Content-Type */
-    NbAcl acl_;                /*!< ACL */
-    int length_;               /*!< ファイルサイズ */
-    std::string created_time_; /*!< 作成日時 */
-    std::string updated_time_; /*!< 更新日時 */
-    std::string meta_etag_;    /*!< メタデータのETag */
-    std::string file_etag_;    /*!< ファイル本体のETag */
-    bool cache_disabled_;      /*!< キャッシュ禁止フラグ */
+    std::string file_name_;      /*!< ファイル名 */
+    std::string content_type_;   /*!< Content-Type */
+    NbAcl acl_;                  /*!< ACL */
+    int length_{0};              /*!< ファイルサイズ */
+    std::string created_time_;   /*!< 作成日時 */
+    std::string updated_time_;   /*!< 更新日時 */
+    std::string meta_etag_;      /*!< メタデータのETag */
+    std::string file_etag_;      /*!< ファイル本体のETag */
+    bool cache_disabled_{false}; /*!< キャッシュ禁止フラグ */
 
     std::string parent_bucket_name_; /*!< バケット名 */
 };

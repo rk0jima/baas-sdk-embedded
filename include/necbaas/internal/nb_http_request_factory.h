@@ -20,6 +20,8 @@
 
 namespace necbaas {
 
+class TestUtil;
+
 /**
  * @class NbHttpRequestFactory nb_http_request_factory.h "necbaas/internal/nb_http_request_factory.h"
  * HTTPリクエストファクトリ.
@@ -30,6 +32,8 @@ namespace necbaas {
 
 class NbHttpRequestFactory {
   public:
+    friend class TestUtil; //UT用
+
     /**
      * コンストラクタ.
      * @param[in]   end_point_url       End Point URL
@@ -149,17 +153,18 @@ class NbHttpRequestFactory {
     const std::string tenant_id_;                               /*!< テナントID */
     const std::string app_id_;                                  /*!< アプリケーションID */
     const std::string app_key_;                                 /*!< アプリケーションキー */
-    const std::string sessnon_token_;                           /*!< セッショントークン */
+    const std::string session_token_;                           /*!< セッショントークン */
     const std::string proxy_;                                   /*!< Proxy */
 
-    NbHttpRequestMethod request_method_;                        /*!< HTTPメソッド */
-    std::string path_;                                          /*!< URLのサービス種別 */
-    std::multimap<std::string, std::string> request_params_;    /*!< リクエストパラメータ */
-    std::multimap<std::string, std::string> headers_;           /*!< HTTPヘッダリスト */
-    std::string body_;                                          /*!< HTTPボディ */
+    NbHttpRequestMethod request_method_{NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET};
+                                                                /*!< HTTPメソッド */
+    std::string path_{};                                        /*!< URLのサービス種別 */
+    std::multimap<std::string, std::string> request_params_{};  /*!< リクエストパラメータ */
+    std::multimap<std::string, std::string> headers_{};         /*!< HTTPヘッダリスト */
+    std::string body_{};                                        /*!< HTTPボディ */
     bool session_none_{false};                                  /*!< セッショントークンを付与しない */
 
-    NbResultCode error_{NbResultCode::NB_OK};             /*!< error発生フラグ  */
+    NbResultCode error_{NbResultCode::NB_OK};                   /*!< error発生フラグ  */
 
     /**
      * リクエストパラメータ生成.
@@ -170,10 +175,10 @@ class NbHttpRequestFactory {
 
     /**
      * パラメータチェック.
-     * コンストラクタで設定されたパラメータをチェックする。
-     * @return  処理結果コード
+     * コンストラクタで設定されたパラメータをチェックする。<br>
+     * チェック結果は、error_に設定される。
      */
-    NbResultCode CheckParameter();
+    void CheckParameter();
 };
 } //namespace necbaas
 #endif //NECBAAS_NBHTTPREQUESTFACTORY_H

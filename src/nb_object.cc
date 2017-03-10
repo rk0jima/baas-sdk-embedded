@@ -82,15 +82,15 @@ NbResult<NbObject> NbObject::PartUpdateObject(const NbJsonObject &json, bool acl
         result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
         return result;
     }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteJsonRequest(request, timeout_);
+    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout_);
     service_->PushRestExecutor(executor);
 
     result.SetResultCode(rest_result.GetResultCode());
 
     if (rest_result.IsSuccess()) {
         const NbHttpResponse &http_response = rest_result.GetSuccessData();
-        NbJsonObject json(http_response.GetBody());
-        SetCurrentParam(json);
+        NbJsonObject response_json(http_response.GetBody());
+        SetCurrentParam(response_json);
         result.SetSuccessData(*this);
     } else if (rest_result.IsRestError()) {
         result.SetRestError(rest_result.GetRestError());
@@ -143,7 +143,7 @@ NbResult<NbObject> NbObject::DeleteObject(bool delete_mark) {
         result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
         return result;
     }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteJsonRequest(request, timeout_);
+    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout_);
     service_->PushRestExecutor(executor);
 
     result.SetResultCode(rest_result.GetResultCode());
@@ -226,15 +226,15 @@ NbResult<NbObject> NbObject::Save(bool acl) {
         result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
         return result;
     }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteJsonRequest(request, timeout_);
+    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout_);
     service_->PushRestExecutor(executor);
 
     result.SetResultCode(rest_result.GetResultCode());
 
     if (rest_result.IsSuccess()) {
         const NbHttpResponse &http_response = rest_result.GetSuccessData();
-        NbJsonObject json(http_response.GetBody());
-        SetCurrentParam(json);
+        NbJsonObject response_json(http_response.GetBody());
+        SetCurrentParam(response_json);
         result.SetSuccessData(*this);
     } else if (rest_result.IsRestError()) {
         result.SetRestError(rest_result.GetRestError());

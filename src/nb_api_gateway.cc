@@ -64,28 +64,18 @@ NbResult<NbHttpResponse> NbApiGateway::ExecuteCustomApi(const std::string &body)
             request_factory.Post(kApigwUrl)
                            .Headers(headers_)
                            .Body(body);
-            if (!body.empty()) {
-                if (content_type_.empty()) {
-                    //エラー処理
-                    result.SetResultCode(NbResultCode::NB_ERROR_CONTENT_TYPE);
-                    NBLOG(ERROR) << "Conten-Type is empty.";
-                    return result;
-                }
-                request_factory.AppendHeader(kHeaderContentType, content_type_);
+            if (AppendContentType(body, &request_factory)) {
+                result.SetResultCode(NbResultCode::NB_ERROR_CONTENT_TYPE);
+                return result;
             }
             break;
         case NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT:
             request_factory.Put(kApigwUrl)
                            .Headers(headers_)
                            .Body(body);
-            if (!body.empty()) {
-                if (content_type_.empty()) {
-                    //エラー処理
-                    result.SetResultCode(NbResultCode::NB_ERROR_CONTENT_TYPE);
-                    NBLOG(ERROR) << "Conten-Type is empty.";
-                    return result;
-                }
-                request_factory.AppendHeader(kHeaderContentType, content_type_);
+            if (AppendContentType(body, &request_factory)) {
+                result.SetResultCode(NbResultCode::NB_ERROR_CONTENT_TYPE);
+                return result;
             }
             break;
         case NbHttpRequestMethod::HTTP_REQUEST_TYPE_DELETE:
@@ -105,7 +95,7 @@ NbResult<NbHttpResponse> NbApiGateway::ExecuteCustomApi(const std::string &body)
         return result;
     }
 
-    result = executor->ExecuteJsonRequest(request, timeout_);
+    result = executor->ExecuteRequest(request, timeout_);
     service_->PushRestExecutor(executor);
 
     return result;
@@ -114,6 +104,19 @@ NbResult<NbHttpResponse> NbApiGateway::ExecuteCustomApi(const std::string &body)
 NbResult<NbHttpResponse> NbApiGateway::ExecuteCustomApi(const std::vector<char> &body) {
     string body_string(body.begin(), body.end());
     return ExecuteCustomApi(body_string);
+}
+
+bool NbApiGateway::AppendContentType(const string &body, NbHttpRequestFactory *request_factory) {
+    if (!body.empty()) {
+        if (content_type_.empty()) {
+            //エラー処理
+            NBLOG(ERROR) << "Content-Type is empty.";
+            return false;
+        }
+        request_factory->AppendHeader(kHeaderContentType, content_type_);
+    }
+
+    return true;    
 }
 
 int NbApiGateway::GetTimeout() const {

@@ -19,6 +19,8 @@ namespace necbaas {
 using std::string;
 using std::vector;
 
+static Json::Value tmp_value;
+
 NbJsonArray::NbJsonArray() : value_(Json::Value::null) {
     Json::Reader reader;
     reader.parse("[]", value_, false);
@@ -41,7 +43,12 @@ void NbJsonArray::PutAll(const string &json) {
 int NbJsonArray::GetInt(unsigned int index, int default_value) const {
     int ret = default_value;
     if (value_.size() > index && value_[index].isNumeric()) {
-        ret = (int)value_[index].asInt();
+        try {
+            ret = (int)value_[index].asInt();
+        }
+        catch (const Json::LogicError &ex) {
+            NBLOG(ERROR) << ex.what();
+        }
     }
     return ret;
 }
@@ -49,7 +56,12 @@ int NbJsonArray::GetInt(unsigned int index, int default_value) const {
 int64_t NbJsonArray::GetInt64(unsigned int index, int64_t default_value) const {
     int64_t ret = default_value;
     if (value_.size() > index && value_[index].isNumeric()) {
-        ret = (int64_t)value_[index].asInt64();
+        try {
+            ret = (int64_t)value_[index].asInt64();
+        }
+        catch (const Json::LogicError &ex) {
+            NBLOG(ERROR) << ex.what();
+        }
     }
     return ret;
 }
@@ -99,6 +111,9 @@ const Json::Value &NbJsonArray::GetSubstitutableValue() const {
 }
 
 Json::Value& NbJsonArray::operator[](unsigned int index) {
+    if (index == std::numeric_limits<unsigned int>::max()) {
+        return tmp_value;
+    }
     return value_[index];
 }
 
@@ -108,16 +123,31 @@ const Json::Value& NbJsonArray::operator[](unsigned int index) const {
 }
 
 
-void NbJsonArray::PutJsonObject(unsigned int index, const NbJsonObject &json_object) {
+bool NbJsonArray::PutJsonObject(unsigned int index, const NbJsonObject &json_object) {
+    if (index == std::numeric_limits<unsigned int>::max()) {
+        // UINTの最大値を超える場合は処理しない
+        return false;
+    }
     value_[index] = json_object.GetSubstitutableValue();
+    return true;
 }
 
-void NbJsonArray::PutJsonArray(unsigned int index, const NbJsonArray &json_array) {
+bool NbJsonArray::PutJsonArray(unsigned int index, const NbJsonArray &json_array) {
+    if (index == std::numeric_limits<unsigned int>::max()) {
+        // UINTの最大値を超える場合は処理しない
+        return false;
+    }
     value_[index] = json_array.GetSubstitutableValue();
+    return true;
 }
 
-void NbJsonArray::PutNull(unsigned int index) {
+bool NbJsonArray::PutNull(unsigned int index) {
+    if (index == std::numeric_limits<unsigned int>::max()) {
+        // UINTの最大値を超える場合は処理しない
+        return false;
+    }
     value_[index] = Json::Value::null;
+    return true;
 }
 
 bool NbJsonArray::AppendJsonObject(const NbJsonObject &json_object) {
@@ -148,7 +178,7 @@ bool NbJsonArray::AppendNull() {
 }
 
 
-int NbJsonArray::GetSize() const {
+unsigned int NbJsonArray::GetSize() const {
     return value_.size();
 }
 
@@ -161,7 +191,8 @@ NbJsonType NbJsonArray::GetType(unsigned int index) const {
 }
 
 void NbJsonArray::Remove(unsigned int index) {
-    value_.removeIndex(index, nullptr);
+    Json::Value removed;
+    value_.removeIndex(index, &removed);
 }
 
 void NbJsonArray::Clear() {
