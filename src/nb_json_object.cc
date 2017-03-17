@@ -150,7 +150,7 @@ void NbJsonObject::PutNull(const string &key) {
     }
 }
 
-int NbJsonObject::GetSize() const {
+unsigned int NbJsonObject::GetSize() const {
     return value_.size();
 }
 

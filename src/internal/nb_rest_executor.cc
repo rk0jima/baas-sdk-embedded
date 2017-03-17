@@ -24,14 +24,14 @@ using std::string;
 NbRestExecutor::NbRestExecutor() {}
 NbRestExecutor::~NbRestExecutor() {}
 
-NbResult<NbHttpResponse> NbRestExecutor::ExecuteFileUpload(const NbHttpRequest &request, const string &file_name,
+NbResult<NbHttpResponse> NbRestExecutor::ExecuteFileUpload(const NbHttpRequest &request, const string &file_path,
                                                            int timeout) {
-    NBLOG(DEBUG) << "Execute file upload: " << file_name;
+    NBLOG(TRACE) << "Execute file upload: " << file_path;
     request.Dump();
 
-    auto file_size = NbUtility::GetFileSize(file_name);
+    auto file_size = NbUtility::GetFileSize(file_path);
 
-    NbHttpFileUploadHandler http_handler(file_name);
+    NbHttpFileUploadHandler http_handler(file_path);
     if (http_handler.IsError()) {
         //ファイルオープン失敗
         NBLOG(ERROR) << "File open error.";
@@ -80,7 +80,7 @@ NbResult<NbHttpResponse> NbRestExecutor::ExecuteFileUpload(const NbHttpRequest &
         curlpp_easy_.setOpt(new curlpp::Options::HttpHeader(request_headers));
 
         // HTTPリクエスト実行
-        curlpp_easy_.perform();
+        Execute();
     }
     catch (const curlpp::LibcurlRuntimeError &ex) {
         int code = static_cast<int>(ex.whatCode());
@@ -100,12 +100,12 @@ NbResult<NbHttpResponse> NbRestExecutor::ExecuteFileUpload(const NbHttpRequest &
     return MakeResult(http_handler, NbResultCode::NB_OK);
 }
 
-NbResult<NbHttpResponse> NbRestExecutor::ExecuteFileDownload(const NbHttpRequest &request, const string &file_name,
+NbResult<NbHttpResponse> NbRestExecutor::ExecuteFileDownload(const NbHttpRequest &request, const string &file_path,
                                                              int timeout) {
-    NBLOG(DEBUG) << "Execute file download: " << file_name;
+    NBLOG(TRACE) << "Execute file download: " << file_path;
     request.Dump();
 
-    NbHttpFileDownloadHandler http_handler(file_name);
+    NbHttpFileDownloadHandler http_handler(file_path);
     if (http_handler.IsError()) {
         //ファイルオープン失敗
         NBLOG(ERROR) << "File open error.";
@@ -137,7 +137,7 @@ NbResult<NbHttpResponse> NbRestExecutor::ExecuteFileDownload(const NbHttpRequest
         curlpp_easy_.setOpt(new curlpp::Options::HttpHeader(request.GetHeaders()));
 
         // HTTPリクエスト実行
-        curlpp_easy_.perform();
+        Execute();
     }
     catch (const curlpp::LibcurlRuntimeError &ex) {
         int code = static_cast<int>(ex.whatCode());
@@ -157,7 +157,7 @@ NbResult<NbHttpResponse> NbRestExecutor::ExecuteFileDownload(const NbHttpRequest
     NbResult<NbHttpResponse> response = MakeResult(http_handler, NbResultCode::NB_OK);
 
     //ダウンロードしたファイルサイズの検証
-    if (response.IsSuccess() && !ValidateFileSize(response.GetSuccessData(), file_name)) {
+    if (response.IsSuccess() && !ValidateFileSize(response.GetSuccessData(), file_path)) {
         NBLOG(ERROR) << "A file size is different.";
         response.SetResultCode(NbResultCode::NB_ERROR_FILE_DOWNLOAD);
     }
@@ -165,7 +165,7 @@ NbResult<NbHttpResponse> NbRestExecutor::ExecuteFileDownload(const NbHttpRequest
     return response;
 }
 
-bool NbRestExecutor::ValidateFileSize(const NbHttpResponse &response, const string &file_name) {
+bool NbRestExecutor::ValidateFileSize(const NbHttpResponse &response, const string &file_path) {
     int header_value = 0;
 
     auto &headers = response.GetHeaders();
@@ -177,13 +177,13 @@ bool NbRestExecutor::ValidateFileSize(const NbHttpResponse &response, const stri
     }
     header_value = std::atoi(x_content_length->second.c_str());
 
-    int file_size = NbUtility::GetFileSize(file_name);
+    int file_size = NbUtility::GetFileSize(file_path);
 
     return (header_value == file_size);
 }
 
 NbResult<NbHttpResponse> NbRestExecutor::ExecuteRequest(const NbHttpRequest &request, int timeout) {
-    NBLOG(DEBUG) << "Execute json request.";
+    NBLOG(TRACE) << "Execute request.";
     request.Dump();
 
     NbHttpHandler http_handler;
@@ -220,7 +220,7 @@ NbResult<NbHttpResponse> NbRestExecutor::ExecuteRequest(const NbHttpRequest &req
         curlpp_easy_.setOpt(new curlpp::Options::HttpHeader(request.GetHeaders()));
 
         // HTTPリクエスト実行
-        curlpp_easy_.perform();
+        Execute();
     }
     catch (const curlpp::LibcurlRuntimeError &ex) {
         int code = static_cast<int>(ex.whatCode());
@@ -295,5 +295,10 @@ NbResult<NbHttpResponse> NbRestExecutor::MakeResult(NbHttpHandler &http_handler,
     }
 
     return result;
+}
+
+void NbRestExecutor::Execute() {
+    // for test
+    curlpp_easy_.perform();
 }
 }  // namespace necbaas

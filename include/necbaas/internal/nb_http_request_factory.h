@@ -31,9 +31,9 @@ class TestUtil;
  */
 
 class NbHttpRequestFactory {
-  public:
     friend class TestUtil; //UT用
 
+  public:
     /**
      * コンストラクタ.
      * @param[in]   end_point_url       End Point URL

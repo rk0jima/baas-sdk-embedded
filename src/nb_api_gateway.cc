@@ -20,8 +20,6 @@ using std::multimap;
 using std::shared_ptr;
 
 // コンストラクタ
-NbApiGateway::NbApiGateway() {}
-
 NbApiGateway::NbApiGateway(const shared_ptr<NbService> &service, const string &api_name,
                            NbHttpRequestMethod http_method, const string &subpath)
         : service_(service), api_name_(api_name), http_method_(http_method), subpath_(subpath) {}
@@ -29,14 +27,8 @@ NbApiGateway::NbApiGateway(const shared_ptr<NbService> &service, const string &a
 // デストラクタ
 NbApiGateway::~NbApiGateway() {}
 
-
-NbResult<NbHttpResponse> NbApiGateway::ExecuteCustomApi() {
-    string body_string{};
-    return ExecuteCustomApi(body_string);
-}
-
 NbResult<NbHttpResponse> NbApiGateway::ExecuteCustomApi(const std::string &body) {
-    NBLOG(DEBUG) << __func__;
+    NBLOG(TRACE) << __func__;
 
     NbResult<NbHttpResponse> result;
 
@@ -58,13 +50,14 @@ NbResult<NbHttpResponse> NbApiGateway::ExecuteCustomApi(const std::string &body)
     switch (http_method_) {
         case NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET:
             request_factory.Get(kApigwUrl)
+                           .Params(parameters_)
                            .Headers(headers_);
             break;
         case NbHttpRequestMethod::HTTP_REQUEST_TYPE_POST:
             request_factory.Post(kApigwUrl)
                            .Headers(headers_)
                            .Body(body);
-            if (AppendContentType(body, &request_factory)) {
+            if (!AppendContentType(body, &request_factory)) {
                 result.SetResultCode(NbResultCode::NB_ERROR_CONTENT_TYPE);
                 return result;
             }
@@ -73,19 +66,19 @@ NbResult<NbHttpResponse> NbApiGateway::ExecuteCustomApi(const std::string &body)
             request_factory.Put(kApigwUrl)
                            .Headers(headers_)
                            .Body(body);
-            if (AppendContentType(body, &request_factory)) {
+            if (!AppendContentType(body, &request_factory)) {
                 result.SetResultCode(NbResultCode::NB_ERROR_CONTENT_TYPE);
                 return result;
             }
             break;
         case NbHttpRequestMethod::HTTP_REQUEST_TYPE_DELETE:
             request_factory.Delete(kApigwUrl)
+                           .Params(parameters_)
                            .Headers(headers_);
             break;
     }
 
     NbHttpRequest request = request_factory.AppendPath("/" + api_name_ + subpath_)
-                                           .Params(parameters_)
                                            .Build();
     //リクエスト実行
     NbRestExecutor *executor = service_->PopRestExecutor();

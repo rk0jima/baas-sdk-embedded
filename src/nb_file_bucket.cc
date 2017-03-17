@@ -21,8 +21,6 @@ using std::vector;
 using std::shared_ptr;
 
 // コンストラクタ
-NbFileBucket::NbFileBucket() {}
-
 NbFileBucket::NbFileBucket(const shared_ptr<NbService> &service, const string &bucket_name)
     : service_(service), bucket_name_(bucket_name) {}
 
@@ -30,7 +28,7 @@ NbFileBucket::NbFileBucket(const shared_ptr<NbService> &service, const string &b
 NbFileBucket::~NbFileBucket() {}
 
 NbResult<int> NbFileBucket::DownloadFile(const string &file_name, const string &file_path) {
-    NBLOG(DEBUG) << __func__;
+    NBLOG(TRACE) << __func__;
 
     NbResult<int> result;
 
@@ -88,7 +86,7 @@ NbResult<int> NbFileBucket::DownloadFile(const string &file_name, const string &
 NbResult<NbFileMetadata> NbFileBucket::UploadNewFile(const string &file_name, const string &file_path,
                                                      const string &content_type, const string &acl,
                                                      bool cache_disable) {
-    NBLOG(DEBUG) << __func__;
+    NBLOG(TRACE) << __func__;
 
     NbResult<NbFileMetadata> result;
 
@@ -168,7 +166,7 @@ NbResult<NbFileMetadata> NbFileBucket::UploadUpdateFile(const string &file_path,
 NbResult<NbFileMetadata> NbFileBucket::UploadUpdateFile(const string &file_name, const string &file_path,
                                                         const string &content_type, const string &meta_etag,
                                                         const string &file_etag) {
-    NBLOG(DEBUG) << __func__;
+    NBLOG(TRACE) << __func__;
 
     NbResult<NbFileMetadata> result;
 
@@ -237,7 +235,7 @@ NbResult<NbJsonObject> NbFileBucket::DeleteFile(const NbFileMetadata &metadata, 
 
 NbResult<NbJsonObject> NbFileBucket::DeleteFile(const string &file_name, const string &meta_etag,
                                                 const string &file_etag, bool delete_mark) {
-    NBLOG(DEBUG) << __func__;
+    NBLOG(TRACE) << __func__;
 
     NbResult<NbJsonObject> result;
 
@@ -299,7 +297,7 @@ NbResult<NbJsonObject> NbFileBucket::DeleteFile(const string &file_name, const s
 }
 
 NbResult<vector<NbFileMetadata>> NbFileBucket::GetFiles(bool published, bool delete_mark) {
-    NBLOG(DEBUG) << __func__;
+    NBLOG(TRACE) << __func__;
 
     NbResult<vector<NbFileMetadata>> result;
 

@@ -28,7 +28,7 @@ NbObject::NbObject(const shared_ptr<NbService> &service, const string &bucket_na
 NbObject::~NbObject() {}
 
 NbResult<NbObject> NbObject::PartUpdateObject(const NbJsonObject &json, bool acl) {
-    NBLOG(DEBUG) << __func__;
+    NBLOG(TRACE) << __func__;
 
     NbResult<NbObject> result;
 
@@ -100,7 +100,7 @@ NbResult<NbObject> NbObject::PartUpdateObject(const NbJsonObject &json, bool acl
 }
 
 NbResult<NbObject> NbObject::DeleteObject(bool delete_mark) {
-    NBLOG(DEBUG) << __func__;
+    NBLOG(TRACE) << __func__;
 
     NbResult<NbObject> result;
 
@@ -126,8 +126,7 @@ NbResult<NbObject> NbObject::DeleteObject(bool delete_mark) {
         return result;
     }
     request_factory.Delete(kObjectsPath)
-                   .AppendPath("/" + bucket_name_ + "/" + object_id_)
-                   .AppendHeader(kHeaderContentType, kHeaderContentTypeJson);
+                   .AppendPath("/" + bucket_name_ + "/" + object_id_);
     if (!etag_.empty()) {
         request_factory.AppendParam(kKeyETag, etag_);
     }
@@ -169,7 +168,7 @@ NbResult<NbObject> NbObject::DeleteObject(bool delete_mark) {
 }
 
 NbResult<NbObject> NbObject::Save(bool acl) {
-    NBLOG(DEBUG) << __func__;
+    NBLOG(TRACE) << __func__;
 
     NbResult<NbObject> result;
 
@@ -245,8 +244,6 @@ NbResult<NbObject> NbObject::Save(bool acl) {
 
 void NbObject::SetCurrentParam(const NbJsonObject &json) {
     value_ = json.GetSubstitutableValue();
-
-    std::vector<std::string> key_list = json.GetKeySet();
 
     if (value_.isMember(kKeyId)) {
         object_id_ = json.GetString(kKeyId);
@@ -329,15 +326,7 @@ const std::tm NbObject::GetUpdatedTime() const {
 }
 
 void NbObject::SetCreatedTime(const std::tm &created_time) {
-    NbUtility::TmToDateString(created_time);
-}
-
-void NbObject::SetCreatedTime(const string &created_time) {
-    created_time_ = created_time;
-}
-
-void NbObject::SetUpdatedTime(const string &updated_time) {
-    updated_time_ = updated_time;
+    created_time_ = NbUtility::TmToDateString(created_time);
 }
 
 const string &NbObject::GetETag() const {

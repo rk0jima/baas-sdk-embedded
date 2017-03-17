@@ -227,7 +227,7 @@ class NbJsonObject {
      * Jsonオブジェクトに存在するKey-Valueセットの数を取得する。
      * @return      Key-Valueセットの数
      */
-    int GetSize() const;
+    unsigned int GetSize() const;
 
     /**
      * オブジェクト空確認.

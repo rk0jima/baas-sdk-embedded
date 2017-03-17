@@ -34,13 +34,6 @@ class NbAclBase {
     NbAclBase();
 
     /**
-     * コンストラクタ.
-     * JsonオブジェクトからACLを構築する。
-     * @param[in]   json     Jsonオブジェクト
-     */
-    explicit NbAclBase(const NbJsonObject &json);
-
-    /**
      * デストラクタ.
      */
     virtual ~NbAclBase();

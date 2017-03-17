@@ -24,10 +24,6 @@ using std::list;
 // コンストラクタ
 NbAclBase::NbAclBase() {}
 
-NbAclBase::NbAclBase(const NbJsonObject &json) {
-    SetJson(json);
-}
-
 // デストラクタ.
 NbAclBase::~NbAclBase() {}
 

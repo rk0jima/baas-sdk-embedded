@@ -24,7 +24,7 @@ static std::mutex mutex_curl;
 // サービス生成
 shared_ptr<NbService> NbService::CreateService(const string &endpoint_url, const string &tenant_id,
                                                const string &app_id, const string &app_key, const string &proxy) {
-    NBLOG(DEBUG) << "NbService::CreateService";
+    NBLOG(TRACE) << __func__;
     return shared_ptr<NbService>(new NbService(endpoint_url, tenant_id, app_id, app_key, proxy));
 }
 
@@ -81,7 +81,7 @@ NbSessionToken NbService::GetSessionToken() {
     std::lock_guard<std::mutex> lock(session_token_mutex_);
     return session_token_;
 }
-void NbService::SetSessionToken(NbSessionToken token) {
+void NbService::SetSessionToken(const NbSessionToken &token) {
     std::lock_guard<std::mutex> lock(session_token_mutex_);
     session_token_ = token;
 }

@@ -27,12 +27,52 @@ namespace necbaas {
  */
 class NbLogger {
   public:
-
+    /**
+     * ロギング設定（デバッグログ）.
+     * プロセス内の全サービスに対して設定される。<br>
+     * default設定: Debug版: 有効、Release版: 無効
+     * @param[in]   flag    true:有効／false:無効
+     */
     static void SetDebugLogEnabled(bool flag);
+
+    /**
+     * ロギング設定（エラーログ）.
+     * プロセス内の全サービスに対して設定される。<br>
+     * default設定: Debug版: 有効、Release版: 無効
+     * @param[in]   flag    true:有効／false:無効
+     */
     static void SetErrorLogEnabled(bool flag);
+
+    /**
+     * ロギング設定（RESTログ）.
+     * プロセス内の全サービスに対して設定される。<br>
+     * default設定: Debug版: 有効、Release版: 無効
+     * @param[in]   flag    true:有効／false:無効
+     */
     static void SetRestLogEnabled(bool flag);
+
+    /**
+     * ロギング設定確認（デバッグログ）.
+     * @return  設定値
+     * @retval  true       有効 
+     * @retval  false      無効
+     */
     static bool IsDebugLogEnabled();
+
+    /**
+     * ロギング設定確認（エラーログ）.
+     * @return  設定値
+     * @retval  true       有効
+     * @retval  false      無効
+     */
     static bool IsErrorLogEnabled();
+
+    /**
+     * ロギング設定確認（RESTログ）.
+     * @return  設定値
+     * @retval  true       有効
+     * @retval  false      無効
+     */
     static bool IsRestLogEnabled();
 
     /**
@@ -45,7 +85,7 @@ class NbLogger {
      */
     ~NbLogger();
 
-    el::Configurations  log_config_;
+    el::Configurations  log_config_;    /*!< ログコンフィグ */
 };
 } //namespace necbaas
 

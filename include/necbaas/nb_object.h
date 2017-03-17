@@ -149,22 +149,6 @@ class NbObject : public NbJsonObject {
     void SetCreatedTime(const std::tm &created_time);
 
     /**
-     * <b>[内部処理用]</b>
-     * @internal
-     * <p>オブジェクトの作成日時設定(文字列).</p>
-     * @param[in]   created_time        オブジェクトの作成日時(UTC)
-     */
-    void SetCreatedTime(const std::string &created_time);
-
-    /**
-     * <b>[内部処理用]</b>
-     * @internal
-     * <p>オブジェクトの更新日時設定(文字列).</p>
-     * @param[in]   created_time        オブジェクトの更新日時(UTC)
-     */
-    void SetUpdatedTime(const std::string &updated_time);
-
-    /**
      * ETag取得.
      * @return      ETag
      */

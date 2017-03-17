@@ -118,7 +118,7 @@ class NbUser {
      * @param[in]   service     サービスインスタンス
      * @return  セッショントークン
      */
-    static const std::string &GetSessionToken(const std::shared_ptr<NbService> &service);
+    static const std::string GetSessionToken(const std::shared_ptr<NbService> &service);
 
     /**
      * ログインユーザ情報取得.

@@ -30,13 +30,6 @@ namespace necbaas {
 class NbApiGateway {
    public:
     /**
-     * <b>[内部処理用]</b>
-     * @internal
-     * <p>コンストラクタ.</p>
-     */
-    NbApiGateway();
-
-    /**
      * コンストラクタ.
      * @param[in]   service        サービスインスタンス
      * @param[in]   api_name       api-name
@@ -53,14 +46,6 @@ class NbApiGateway {
 
     /**
      * カスタムAPI実行.
-     * BodyなしのカスタムAPIを実行する。<br>
-     * 設定されたapi-nameが空文字の場合は、API名エラーを返す。<br>
-     * @return      処理結果
-     */
-    NbResult<NbHttpResponse> ExecuteCustomApi();
-
-    /**
-     * カスタムAPI実行.
      * 文字列Body付きのカスタムAPIを実行する。<br>
      * 設定されたapi-nameが空文字の場合は、API名エラーを返す。<br>
      * 空文字が設定された場合はBodyなしとして実行する。<br>
@@ -68,7 +53,7 @@ class NbApiGateway {
      * @param[in]   body        Bodyデータ(文字列)
      * @return      処理結果
      */
-    NbResult<NbHttpResponse> ExecuteCustomApi(const std::string &body);
+    NbResult<NbHttpResponse> ExecuteCustomApi(const std::string &body = "");
 
     /**
      * カスタムAPI実行.

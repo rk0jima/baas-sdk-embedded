@@ -44,27 +44,27 @@ public:
     /**
      * デストラクタ.
      */
-    ~NbRestExecutor();
+    virtual ~NbRestExecutor();
 
     /**
      * ファイルアップロード実行.
      * @param[in]   request         HTTPリクエスト
-     * @param[in]   file_name       ファイル名
+     * @param[in]   file_path       ファイルパス
      * @param[in]   timeout         RESTタイムアウト(秒)
      * @return      処理結果
      */
-    NbResult<NbHttpResponse> ExecuteFileUpload(const NbHttpRequest &request, const std::string &file_name,
-                                               int timeout = kRestTimeoutDefault);
+    virtual NbResult<NbHttpResponse> ExecuteFileUpload(const NbHttpRequest &request, const std::string &file_path,
+                                                       int timeout = kRestTimeoutDefault);
 
     /**
      * ファイルダウンロード実行.
      * @param[in]   request         HTTPリクエスト
-     * @param[in]   file_name       ファイル名
+     * @param[in]   file_path       ファイルパス
      * @param[in]   timeout         RESTタイムアウト(秒)
      * @return      処理結果
      */
-    NbResult<NbHttpResponse> ExecuteFileDownload(const NbHttpRequest &request, const std::string &file_name,
-                                                 int timeout = kRestTimeoutDefault);
+    virtual NbResult<NbHttpResponse> ExecuteFileDownload(const NbHttpRequest &request, const std::string &file_path,
+                                                         int timeout = kRestTimeoutDefault);
 
     /**
      * REST実行(データの送受信).
@@ -72,8 +72,9 @@ public:
      * @param[in]   timeout         RESTタイムアウト(秒)
      * @return      処理結果
      */
-    NbResult<NbHttpResponse> ExecuteRequest(const NbHttpRequest &request, int timeout = kRestTimeoutDefault);
-private:
+    virtual NbResult<NbHttpResponse> ExecuteRequest(const NbHttpRequest &request, int timeout = kRestTimeoutDefault);
+
+protected:
     curlpp::Easy curlpp_easy_;    /*!< cURLppインスタンス */
 
     /**
@@ -102,6 +103,11 @@ private:
      * @retval      false   ファイルサイズ不一致 or X-Content-Lengthヘッダなし
      */
     bool ValidateFileSize(const NbHttpResponse &response, const std::string &file_name);
+
+    /**
+     * REST実行開始.
+     */   
+    virtual void Execute();
 };
 } //namespace necbaas
 #endif //NECBAAS_NBRESTEXECUTOR_H

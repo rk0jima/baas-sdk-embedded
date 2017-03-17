@@ -45,7 +45,7 @@ NbResult<NbUser> NbUser::LoginWithEmail(const shared_ptr<NbService> &service, co
 // ログイン
 NbResult<NbUser> NbUser::Login(const shared_ptr<NbService> &service, const string &username,
                                const string &email, const string &password, int timeout) {
-    NBLOG(DEBUG) << __func__;
+    NBLOG(TRACE) << __func__;
 
     NbResult<NbUser> result;
     if ((username.empty() && email.empty()) || password.empty()) {
@@ -105,7 +105,7 @@ NbResult<NbUser> NbUser::Login(const shared_ptr<NbService> &service, const strin
 }
 
 NbResult<NbUser> NbUser::Logout(const shared_ptr<NbService> &service, int timeout) {
-    NBLOG(DEBUG) << __func__;
+    NBLOG(TRACE) << __func__;
 
     NbResult<NbUser> result;
 
@@ -167,7 +167,7 @@ time_t NbUser::GetSessionTokenExpiration(const shared_ptr<NbService> &service) {
     return session_token.GetExpireAt();
 }
 
-const string &NbUser::GetSessionToken(const shared_ptr<NbService> &service) {
+const string NbUser::GetSessionToken(const shared_ptr<NbService> &service) {
     NbSessionToken session_token = service->GetSessionToken();
     return session_token.GetSessionToken();
 }

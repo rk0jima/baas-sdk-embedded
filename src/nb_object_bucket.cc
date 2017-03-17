@@ -27,7 +27,7 @@ NbObjectBucket::NbObjectBucket(const std::shared_ptr<NbService> &service, const 
 NbObjectBucket::~NbObjectBucket() {}
 
 NbResult<NbObject> NbObjectBucket::GetObject(const string &object_id, bool delete_mark) {
-    NBLOG(DEBUG) << __func__;
+    NBLOG(TRACE) << __func__;
 
     NbResult<NbObject> result;
 
@@ -85,7 +85,7 @@ NbResult<NbObject> NbObjectBucket::GetObject(const string &object_id, bool delet
 }
 
 NbResult<vector<NbObject>> NbObjectBucket::Query(const NbQuery &query, int *count) {
-    NBLOG(DEBUG) << __func__;
+    NBLOG(TRACE) << __func__;
 
     NbResult<vector<NbObject>> result;
 

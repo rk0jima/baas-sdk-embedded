@@ -119,7 +119,7 @@ class NbService {
      * <p>セッショントークン設定.</p>
      * @param[in]   token    セッショントークン
      */
-    void SetSessionToken(NbSessionToken token);
+    virtual void SetSessionToken(const NbSessionToken &token);
 
     /**
      * <b>[内部処理用]</b>
@@ -136,7 +136,7 @@ class NbService {
      * @retval  nullptr以外  取得成功
      * @retval  nullptr      同時接続数オーバー
      */
-    NbRestExecutor *PopRestExecutor();
+    virtual NbRestExecutor *PopRestExecutor();
 
     /**
      * <b>[内部処理用]</b>
@@ -144,7 +144,7 @@ class NbService {
      * <p>REST Executor 返却.</p>
      * @param[in]   executor    REST Executor
      */
-    void PushRestExecutor(NbRestExecutor *executor);
+    virtual void PushRestExecutor(NbRestExecutor *executor);
 
     /**
      * <b>[内部処理用]</b>
@@ -165,6 +165,7 @@ class NbService {
     NbRestExecutorPool rest_executor_pool_; /*!< REST Executorプール */
     std::mutex session_token_mutex_;        /*!< セッショントークン更新用Mutex */
 
+   protected:
     /**
      * コンストラクタ.
      */

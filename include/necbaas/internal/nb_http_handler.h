@@ -85,6 +85,12 @@ class NbHttpHandler {
      */
     std::vector<std::string>::iterator ParseStatusLine(int *status_code, std::string *reason_phrase);
 
+    /**
+     * ステータスライン検索.
+     * レスポンスヘッダを後方検索し、ステータスラインのイテレータを返す。<br>
+     * ステータスラインが見つからなかった場合は、response_headers_.end()を返す。
+     * @return      ステータスラインを示すイテレータ
+     */
     std::vector<std::string>::iterator SearchStatusLine();
 };
 } //namespace necbaas

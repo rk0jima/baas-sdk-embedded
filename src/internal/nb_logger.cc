@@ -72,7 +72,7 @@ void NbLogger::SetRestLogEnabled(bool flag) {
 
 bool NbLogger::IsDebugLogEnabled() {
     el::Logger* l = el::Loggers::getLogger(LOGGER_ID);
-    return l->typedConfigurations()->enabled(el::Level::Debug);
+    return l->typedConfigurations()->enabled(el::Level::Trace);
 }
 
 bool NbLogger::IsErrorLogEnabled() {

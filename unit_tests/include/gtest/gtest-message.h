@@ -48,7 +48,7 @@
 
 #include <limits>
 
-#include "internal/gtest-port.h"
+#include "gtest/internal/gtest-port.h"
 
 // Ensures that there is at least one operator<< in the global namespace.
 // See Message& operator<<(...) below for why.

@@ -87,7 +87,11 @@ NbQuery &NbQuery::NotExists(const std::string &key) {
 NbQuery &NbQuery::Not(const std::string &key) {
     if (!key.empty() && conditions_.isMember(key)) {
         Json::Value json;
-        json["$not"] = conditions_[key];
+        if (conditions_[key].isObject()) {
+            json["$not"] = conditions_[key];
+        } else {
+            json["$not"]["$eq"] = conditions_[key];
+        }
         conditions_[key] = json;
     }
     return *this;
@@ -219,7 +223,7 @@ std::string NbQuery::GetDeleteMarkString() const {
 std::string NbQuery::GetProjectionString() const {
     NbJsonObject object;
     for (auto projection : projection_) {
-        object[projection.first] = projection.second ? "1" : "0";
+        object[projection.first] = projection.second ? 1 : 0;
     }
 
     if (object.IsEmpty()) {

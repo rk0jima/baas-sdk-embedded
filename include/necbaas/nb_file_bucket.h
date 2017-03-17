@@ -29,13 +29,6 @@ namespace necbaas {
 class NbFileBucket {
    public:
     /**
-     * <b>[内部処理用]</b>
-     * @internal
-     * <p>コンストラクタ.</p>
-     */
-    NbFileBucket();
-
-    /**
      * コンストラクタ.
      * @param[in]   service        サービスインスタンス
      * @param[in]   bucket_name    バケット名

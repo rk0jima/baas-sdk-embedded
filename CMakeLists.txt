@@ -4,10 +4,15 @@ project(embeddedsdk)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQURED ON)
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(CMAKE_CXX_FLAGS "-std=c++11 -DELPP_THREAD_SAFE -DELPP_STL_LOGGING -DNB_DEBUG -O0 -g3")
+    set(CMAKE_CXX_FLAGS "-std=c++11 -DELPP_THREAD_SAFE -DELPP_STL_LOGGING -DELPP_NO_LOG_TO_FILE -DELPP_NO_LOG_TO_FILE -DNB_DEBUG -O0 -g3")
 else()
-    set(CMAKE_CXX_FLAGS "-std=c++11 -DELPP_THREAD_SAFE -DELPP_STL_LOGGING")
+    set(CMAKE_CXX_FLAGS "-std=c++11 -DELPP_THREAD_SAFE -DELPP_STL_LOGGING -DELPP_NO_LOG_TO_FILE -DELPP_NO_LOG_TO_FILE")
 endif()
+
+# バージョン番号
+set(serial 6.2.0)
+# 共有ライブラリのバージョン番号
+set(soserial 6)
 
 set(LIB_SOURCE_FILES
     src/nb_http_response.cc
@@ -47,6 +52,11 @@ include_directories(${PROJECT_SOURCE_DIR}/libs/curlpp/include)
 include_directories(${PROJECT_SOURCE_DIR}/include/)
 add_library(embeddedsdk SHARED ${LIB_SOURCE_FILES})
 
+set_target_properties(embeddedsdk PROPERTIES VERSION ${serial} SOVERSION ${soserial})
+
+
 install(TARGETS embeddedsdk LIBRARY DESTINATION lib)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/necbaas/ DESTINATION "include/necbaas")
 
+enable_testing()
+add_subdirectory(unit_tests)

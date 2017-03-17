@@ -52,7 +52,7 @@ int GetFileSize(const std::string &file_name) {
     std::ifstream file_stream(file_name, std::ios::ate | std::ios::binary);
     if (!file_stream) {
         // ファイルオープンエラー
-        NBLOG(ERROR) << "File open error..";
+        NBLOG(ERROR) << "File open error.";
         return 0;
     }
     file_stream.seekg(0, std::fstream::end);
