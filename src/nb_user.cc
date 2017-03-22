@@ -118,6 +118,11 @@ NbResult<NbUser> NbUser::Logout(const shared_ptr<NbService> &service, int timeou
 
     //HTTPリクエスト作成
     NbHttpRequestFactory request_factory = service->GetHttpRequestFactory();
+
+    // この時点で内部に保存しているセッショントークンをクリア(ログアウト)する
+    // RESTに使用するセッショントークンは、ファクトリインスタンスにコピーされている
+    service->ClearSessionToken();
+
     if (request_factory.IsError()) {
         //request構築エラー
         result.SetResultCode(request_factory.GetError());
@@ -138,7 +143,6 @@ NbResult<NbUser> NbUser::Logout(const shared_ptr<NbService> &service, int timeou
     result.SetResultCode(rest_result.GetResultCode());
 
     if (rest_result.IsSuccess()) {
-        service->ClearSessionToken();
         const NbHttpResponse &http_response = rest_result.GetSuccessData();
 
         NbJsonObject json(http_response.GetBody());
@@ -148,7 +152,6 @@ NbResult<NbUser> NbUser::Logout(const shared_ptr<NbService> &service, int timeou
         result.SetSuccessData(user);
 
     } else if (rest_result.IsRestError()) {
-        service->ClearSessionToken();
         result.SetRestError(rest_result.GetRestError());
     }
 

@@ -300,7 +300,7 @@ TEST_F(NbUserTest, LogoutFatal) {
 
     // 戻り値確認
     EXPECT_TRUE(result.IsFatalError());
-    EXPECT_TRUE(NbUser::IsLoggedIn(service));
+    EXPECT_FALSE(NbUser::IsLoggedIn(service));
 }
 
 //NbUser::Logout(未ログイン)
@@ -327,7 +327,7 @@ TEST(NbUser, LogoutRequestFactoryFail) {
     // 戻り値確認
     EXPECT_TRUE(result.IsFatalError());
     EXPECT_EQ(NbResultCode::NB_ERROR_ENDPOINT_URL, result.GetResultCode());
-    EXPECT_TRUE(NbUser::IsLoggedIn(service));
+    EXPECT_FALSE(NbUser::IsLoggedIn(service));
 }
 
 //NbUser::Logout(接続数オーバー)
@@ -344,7 +344,7 @@ TEST_F(NbUserTest, LogoutConnectionOver) {
     // 戻り値確認
     EXPECT_TRUE(result.IsFatalError());
     EXPECT_EQ(NbResultCode::NB_ERROR_CONNECTION_OVER, result.GetResultCode());
-    EXPECT_TRUE(NbUser::IsLoggedIn(service));
+    EXPECT_FALSE(NbUser::IsLoggedIn(service));
 }
 
 //NbUser::IsLoggedIn
