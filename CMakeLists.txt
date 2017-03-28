@@ -60,3 +60,4 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/necbaas/ DESTINATION "include/ne
 
 enable_testing()
 add_subdirectory(unit_tests)
+add_subdirectory(functional_tests)

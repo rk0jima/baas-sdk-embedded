@@ -1,0 +1,22 @@
+swagger: '2.0'
+basePath: /embedded
+produces:
+  - application/json
+paths:
+  /echoBack:
+    get:
+      operationId: echoBack
+      summary: Echo back
+      description: Echo back
+    put:
+      operationId: echoBack
+      summary: Echo back
+      description: Echo back
+    post:
+      operationId: echoBack
+      summary: Echo back
+      description: Echo back
+    delete:
+      operationId: echoBack
+      summary: Echo back
+      description: Echo back
