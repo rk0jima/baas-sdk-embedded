@@ -63,7 +63,10 @@ NbJsonObject NbAcl::ToJsonObject() const {
     NbJsonObject json = NbAclBase::ToJsonObject();
     NbJsonArray array;
 
-    json[kKeyOwner] = owner_;
+    // オーナは空文字の場合は設定しない
+    if (!owner_.empty()) {
+        json[kKeyOwner] = owner_;
+    }
 
     array.PutAllList(admin_);
     json.PutJsonArray(kKeyAdmin, array);

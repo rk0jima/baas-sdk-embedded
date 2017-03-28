@@ -218,7 +218,7 @@ TEST(NbAcl, Owner) {
 //NbAcl::ToJsonString(ToJsonObjectを含む)
 TEST(NbAcl, ToJsonString) {
     NbAcl acl;
-    NbJsonObject json(R"({"owner":"","r":[],"w":[],"c":[],"u":[],"d":[],"admin":[]})");
+    NbJsonObject json(R"({"r":[],"w":[],"c":[],"u":[],"d":[],"admin":[]})");
     EXPECT_EQ(json.ToJsonString(), acl.ToJsonString());
 
     json = NbJsonObject(kJsonAclString);
