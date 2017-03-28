@@ -356,7 +356,7 @@ TEST(NbJsonArray, JsonObject) {
     EXPECT_EQ(0, array.GetDouble(0));
     EXPECT_FALSE(array.GetBoolean(0));
     EXPECT_EQ(string(""), array.GetString(0));
-    EXPECT_EQ(kDefaultObject, array.GetJsonObject(0).ToJsonString());
+    EXPECT_EQ(testValue, array.GetJsonObject(0));
     EXPECT_TRUE(array.GetJsonArray(0).IsEmpty());
 
     testValue = NbJsonObject();
@@ -366,13 +366,13 @@ TEST(NbJsonArray, JsonObject) {
     EXPECT_EQ(0, array.GetDouble(0));
     EXPECT_FALSE(array.GetBoolean(0));
     EXPECT_EQ(string(""), array.GetString(0));
-    EXPECT_EQ(string("{}"), array.GetJsonObject(0).ToJsonString());
+    EXPECT_EQ(testValue, array.GetJsonObject(0));
     EXPECT_TRUE(array.GetJsonArray(0).IsEmpty());
 
     testValue.PutAll(kDefaultObject);
     EXPECT_TRUE(array.AppendJsonObject(testValue));
     EXPECT_EQ(2, array.GetSize());
-    EXPECT_EQ(kDefaultObject, array.GetJsonObject(1).ToJsonString());
+    EXPECT_EQ(testValue, array.GetJsonObject(1));
 
     //Index最大値
     array[std::numeric_limits<unsigned int>::max() - 1] = 0;
@@ -393,7 +393,7 @@ TEST(NbJsonArray, JsonArray) {
     EXPECT_FALSE(array.GetBoolean(0));
     EXPECT_EQ(string(""), array.GetString(0));
     EXPECT_TRUE(array.GetJsonObject(0).IsEmpty());
-    EXPECT_EQ(kDefaultArray, array.GetJsonArray(0).ToJsonString());
+    EXPECT_EQ(testValue, array.GetJsonArray(0));
 
     testValue = NbJsonArray();
     EXPECT_TRUE(array.PutJsonArray(0, testValue));
@@ -404,12 +404,12 @@ TEST(NbJsonArray, JsonArray) {
     EXPECT_FALSE(array.GetBoolean(0));
     EXPECT_EQ(string(""), array.GetString(0));
     EXPECT_TRUE(array.GetJsonObject(0).IsEmpty());
-    EXPECT_EQ("[]", array.GetJsonArray(0).ToJsonString());
+    EXPECT_EQ(testValue, array.GetJsonArray(0));
 
     testValue.PutAll(kDefaultArray);
     EXPECT_TRUE(array.AppendJsonArray(testValue));
     EXPECT_EQ(2, array.GetSize());
-    EXPECT_EQ(kDefaultArray, array.GetJsonArray(1).ToJsonString());
+    EXPECT_EQ(testValue, array.GetJsonArray(1));
 
     //Index最大値
     array[std::numeric_limits<unsigned int>::max() - 1] = 0;

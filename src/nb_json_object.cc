@@ -184,4 +184,8 @@ string NbJsonObject::ToJsonString() const {
 void NbJsonObject::Replace(const Json::Value &value) {
     value_ = value;
 }
+
+bool NbJsonObject::operator==(const NbJsonObject &other) const {
+    return (value_ == other.GetSubstitutableValue());
+}
 } //namespace necbaas

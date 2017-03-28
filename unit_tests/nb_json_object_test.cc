@@ -252,7 +252,7 @@ TEST(NbJsonObject, JsonObject) {
     EXPECT_EQ(0, obj.GetDouble("testKey"));
     EXPECT_FALSE(obj.GetBoolean("testKey"));
     EXPECT_EQ(string(""), obj.GetString("testKey"));
-    EXPECT_EQ(kDefaultObject, obj.GetJsonObject("testKey").ToJsonString());
+    EXPECT_EQ(testValue, obj.GetJsonObject("testKey"));
     EXPECT_TRUE(obj.GetJsonArray("testKey").IsEmpty());
 
     testValue = NbJsonObject();
@@ -262,7 +262,7 @@ TEST(NbJsonObject, JsonObject) {
     EXPECT_EQ(0, obj.GetDouble("testKey"));
     EXPECT_FALSE(obj.GetBoolean("testKey"));
     EXPECT_EQ(string(""), obj.GetString("testKey"));
-    EXPECT_EQ(string("{}"), obj.GetJsonObject("testKey").ToJsonString());
+    EXPECT_EQ(testValue, obj.GetJsonObject("testKey"));
     EXPECT_TRUE(obj.GetJsonArray("testKey").IsEmpty());
 }
 
@@ -277,7 +277,7 @@ TEST(NbJsonObject, JsonArray) {
     EXPECT_FALSE(obj.GetBoolean("testKey"));
     EXPECT_EQ(string(""), obj.GetString("testKey"));
     EXPECT_TRUE(obj.GetJsonObject("testKey").IsEmpty());
-    EXPECT_EQ(kDefaultArray, obj.GetJsonArray("testKey").ToJsonString());
+    EXPECT_EQ(testValue, obj.GetJsonArray("testKey"));
 
     testValue = NbJsonArray();
     obj.PutJsonArray("testKey", testValue);
@@ -287,7 +287,7 @@ TEST(NbJsonObject, JsonArray) {
     EXPECT_FALSE(obj.GetBoolean("testKey"));
     EXPECT_EQ(string(""), obj.GetString("testKey"));
     EXPECT_TRUE(obj.GetJsonObject("testKey").IsEmpty());
-    EXPECT_EQ("[]", obj.GetJsonArray("testKey").ToJsonString());
+    EXPECT_EQ(testValue, obj.GetJsonArray("testKey"));
 }
 
 //NbJsonObject KeyNone&defaltValue

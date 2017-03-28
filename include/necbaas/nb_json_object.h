@@ -285,6 +285,11 @@ class NbJsonObject {
      */
     void Replace(const Json::Value &value);
 
+    /**
+     * ==演算子.
+     */ 
+    bool operator==(const NbJsonObject &other) const;
+
    protected:
     Json::Value value_; /*!< Jsonデータ */
 };

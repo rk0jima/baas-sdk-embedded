@@ -438,6 +438,11 @@ class NbJsonArray {
      */
     void Replace(const Json::Value &value);
 
+    /**
+     * ==演算子.
+     */
+    bool operator==(const NbJsonArray &other) const;
+
    private:
     Json::Value value_; /*!< Jsonデータ */
 
