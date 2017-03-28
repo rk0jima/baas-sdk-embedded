@@ -37,7 +37,8 @@ static const string kFileMetadata{R"({
     "updatedAt": "2013-08-27T04:37:30.000Z",
     "metaETag": "8c92c97e-01a7-11e4-9598-53792c688d1b",
     "fileETag": "8c92c97e-01a7-11e4-9598-53792c688d1c",
-    "cacheDisabled": false
+    "cacheDisabled": false,
+    "_deleted": true
 })"};
 
 static const string kFileList{R"({
@@ -665,7 +666,48 @@ TEST_F(NbFileBucketTest, UploadUpdateFileConnectionOver) {
     EXPECT_EQ(NbResultCode::NB_ERROR_CONNECTION_OVER, result.GetResultCode());
 }
 
-static NbResult<NbHttpResponse> DeleteFileCommon(const NbHttpRequest &request, int timeout) {
+static NbResult<NbHttpResponse> DeleteFileNorm1(const NbHttpRequest &request, int timeout) {
+    EXPECT_EQ(string("/files/" + kBucketName + "/" + kFileName + "?deleteMark=1&fileETag=8c92c97e-01a7-11e4-9598-53792c688d1c&metaETag=8c92c97e-01a7-11e4-9598-53792c688d1b"),
+              request.GetUrl().substr(request.GetUrl().find("/files/")));
+    EXPECT_EQ(60, timeout);
+
+    EXPECT_EQ(NbHttpRequestMethod::HTTP_REQUEST_TYPE_DELETE, request.GetMethod());
+    EXPECT_EQ(3, request.GetHeaders().size());
+    EXPECT_EQ(kEmpty, request.GetBody());
+
+    NbResult<NbHttpResponse> tmp_result(NbResultCode::NB_OK);
+    std::vector<char> body(kFileMetadata.length());
+    std::copy(kFileMetadata.c_str(), kFileMetadata.c_str() + kFileMetadata.length(), body.begin());
+    NbHttpResponse response(200, string("OK"), std::multimap<std::string, std::string>(), body);
+    tmp_result.SetSuccessData(response);
+
+    return tmp_result;
+}
+
+//NbFileBucketTest::DeleteFile(metadata指定)
+TEST_F(NbFileBucketTest, DeleteFileNorm1) {
+    SetExpect(&executor_, &DeleteFileNorm1);
+
+    shared_ptr<NbService> service(mock_service_);
+
+    NbFileBucket file_bucket(service, kBucketName);
+    NbFileMetadata in_meta(kBucketName, NbJsonObject(kFileMetadata));
+    NbResult<NbFileMetadata> result = file_bucket.DeleteFile(in_meta, true);
+
+    // 戻り値確認
+    EXPECT_TRUE(result.IsSuccess());
+    NbFileMetadata metadata = result.GetSuccessData();
+    EXPECT_EQ(kFileName, metadata.GetFileName());
+    EXPECT_TRUE(metadata.IsDeleted());
+}
+
+static NbResult<NbHttpResponse> DeleteFileNorm2(const NbHttpRequest &request, int timeout) {
+    string file_name = "%E3%83%86%E3%82%B9%E3%83%88%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB";
+    EXPECT_EQ(string("/files/" + kBucketName + "/" + file_name),
+              request.GetUrl().substr(request.GetUrl().find("/files/")));
+    EXPECT_EQ(3, request.GetHeaders().size());
+    EXPECT_EQ(10, timeout);
+
     EXPECT_EQ(NbHttpRequestMethod::HTTP_REQUEST_TYPE_DELETE, request.GetMethod());
     EXPECT_EQ(3, request.GetHeaders().size());
     EXPECT_EQ(kEmpty, request.GetBody());
@@ -678,38 +720,6 @@ static NbResult<NbHttpResponse> DeleteFileCommon(const NbHttpRequest &request, i
     return tmp_result;
 }
 
-static NbResult<NbHttpResponse> DeleteFileNorm1(const NbHttpRequest &request, int timeout) {
-    EXPECT_EQ(string("/files/" + kBucketName + "/" + kFileName + "?deleteMark=1&fileETag=8c92c97e-01a7-11e4-9598-53792c688d1c&metaETag=8c92c97e-01a7-11e4-9598-53792c688d1b"),
-              request.GetUrl().substr(request.GetUrl().find("/files/")));
-    EXPECT_EQ(60, timeout);
-    return DeleteFileCommon(request, timeout);
-}
-
-//NbFileBucketTest::DeleteFile(metadata指定)
-TEST_F(NbFileBucketTest, DeleteFileNorm1) {
-    SetExpect(&executor_, &DeleteFileNorm1);
-
-    shared_ptr<NbService> service(mock_service_);
-
-    NbFileBucket file_bucket(service, kBucketName);
-    NbFileMetadata in_meta(kBucketName, NbJsonObject(kFileMetadata));
-    NbResult<NbJsonObject> result = file_bucket.DeleteFile(in_meta, true);
-
-    // 戻り値確認
-    EXPECT_TRUE(result.IsSuccess());
-    NbJsonObject response_json = result.GetSuccessData();
-    EXPECT_TRUE(response_json.IsEmpty());
-}
-
-static NbResult<NbHttpResponse> DeleteFileNorm2(const NbHttpRequest &request, int timeout) {
-    string file_name = "%E3%83%86%E3%82%B9%E3%83%88%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB";
-    EXPECT_EQ(string("/files/" + kBucketName + "/" + file_name),
-              request.GetUrl().substr(request.GetUrl().find("/files/")));
-    EXPECT_EQ(3, request.GetHeaders().size());
-    EXPECT_EQ(10, timeout);
-    return DeleteFileCommon(request, timeout);
-}
-
 //NbFileBucketTest::DeleteFile(Content-Type, Etag空)
 TEST_F(NbFileBucketTest, DeleteFileNorm2) {
     SetExpect(&executor_, &DeleteFileNorm2);
@@ -719,12 +729,12 @@ TEST_F(NbFileBucketTest, DeleteFileNorm2) {
     NbFileBucket file_bucket(service, kBucketName);
     file_bucket.SetTimeout(10);
     EXPECT_EQ(10, file_bucket.GetTimeout());
-    NbResult<NbJsonObject> result = file_bucket.DeleteFile(string("テストファイル"), kEmpty, kEmpty);
+    NbResult<NbFileMetadata> result = file_bucket.DeleteFile(string("テストファイル"), kEmpty, kEmpty);
 
     // 戻り値確認
     EXPECT_TRUE(result.IsSuccess());
-    NbJsonObject response_json = result.GetSuccessData();
-    EXPECT_TRUE(response_json.IsEmpty());
+    NbFileMetadata metadata = result.GetSuccessData();
+    EXPECT_TRUE(metadata.GetFileName().empty());
 }
 
 static NbResult<NbHttpResponse> DeleteFileRestError(const NbHttpRequest &request, int timeout) {
@@ -752,7 +762,7 @@ TEST_F(NbFileBucketTest, DeleteFileRestError) {
 
     NbFileBucket file_bucket(service, kBucketName);
     NbFileMetadata in_meta(kBucketName, NbJsonObject(kFileMetadata));
-    NbResult<NbJsonObject> result = file_bucket.DeleteFile(in_meta, true);
+    NbResult<NbFileMetadata> result = file_bucket.DeleteFile(in_meta, true);
 
     // 戻り値確認
     EXPECT_TRUE(result.IsRestError());
@@ -784,7 +794,7 @@ TEST_F(NbFileBucketTest, DeleteFileFatal) {
 
     NbFileBucket file_bucket(service, kBucketName);
     NbFileMetadata in_meta(kBucketName, NbJsonObject(kFileMetadata));
-    NbResult<NbJsonObject> result = file_bucket.DeleteFile(in_meta, true);
+    NbResult<NbFileMetadata> result = file_bucket.DeleteFile(in_meta, true);
 
     // 戻り値確認
     EXPECT_TRUE(result.IsFatalError());
@@ -795,7 +805,7 @@ TEST_F(NbFileBucketTest, DeleteFileNameEmpty) {
     shared_ptr<NbService> service = NbService::CreateService(kEndPointUrl, kTenantId, kAppId, kAppKey, kProxy);
 
     NbFileBucket file_bucket(service, kBucketName);
-    NbResult<NbJsonObject> result = file_bucket.DeleteFile(kEmpty, kEmpty, kEmpty);
+    NbResult<NbFileMetadata> result = file_bucket.DeleteFile(kEmpty, kEmpty, kEmpty);
 
     // 戻り値確認
     EXPECT_TRUE(result.IsFatalError());
@@ -807,7 +817,7 @@ TEST_F(NbFileBucketTest, DeleteFileBucketNameEmpty) {
     shared_ptr<NbService> service = NbService::CreateService(kEndPointUrl, kTenantId, kAppId, kAppKey, kProxy);
 
     NbFileBucket file_bucket(service, kEmpty);
-    NbResult<NbJsonObject> result = file_bucket.DeleteFile(kFileName, kEmpty, kEmpty);
+    NbResult<NbFileMetadata> result = file_bucket.DeleteFile(kFileName, kEmpty, kEmpty);
 
     // 戻り値確認
     EXPECT_TRUE(result.IsFatalError());
@@ -819,7 +829,7 @@ TEST_F(NbFileBucketTest, DeleteFileRequestFactoryFail) {
     shared_ptr<NbService> service = NbService::CreateService(kEmpty, kTenantId, kAppId, kAppKey, kProxy);
 
     NbFileBucket file_bucket(service, kBucketName);
-    NbResult<NbJsonObject> result = file_bucket.DeleteFile(kFileName, kEmpty, kEmpty);
+    NbResult<NbFileMetadata> result = file_bucket.DeleteFile(kFileName, kEmpty, kEmpty);
 
     // 戻り値確認
     EXPECT_TRUE(result.IsFatalError());
@@ -833,7 +843,7 @@ TEST_F(NbFileBucketTest, DeleteFileConnectionOver) {
     shared_ptr<NbService> service(mock_service_);
 
     NbFileBucket file_bucket(service, kBucketName);
-    NbResult<NbJsonObject> result = file_bucket.DeleteFile(kFileName, kEmpty, kEmpty);
+    NbResult<NbFileMetadata> result = file_bucket.DeleteFile(kFileName, kEmpty, kEmpty);
 
     // 戻り値確認
     EXPECT_TRUE(result.IsFatalError());

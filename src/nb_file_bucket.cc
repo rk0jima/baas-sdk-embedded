@@ -228,16 +228,16 @@ NbResult<NbFileMetadata> NbFileBucket::UploadUpdateFile(const string &file_name,
     return result;
 }
 
-NbResult<NbJsonObject> NbFileBucket::DeleteFile(const NbFileMetadata &metadata, bool delete_mark) {
+NbResult<NbFileMetadata> NbFileBucket::DeleteFile(const NbFileMetadata &metadata, bool delete_mark) {
     return DeleteFile(metadata.GetFileName(), metadata.GetMetaETag(),
                       metadata.GetFileETag(), delete_mark);
 }
 
-NbResult<NbJsonObject> NbFileBucket::DeleteFile(const string &file_name, const string &meta_etag,
+NbResult<NbFileMetadata> NbFileBucket::DeleteFile(const string &file_name, const string &meta_etag,
                                                 const string &file_etag, bool delete_mark) {
     NBLOG(TRACE) << __func__;
 
-    NbResult<NbJsonObject> result;
+    NbResult<NbFileMetadata> result;
 
     if (file_name.empty()) {
         //エラー処理
@@ -288,7 +288,8 @@ NbResult<NbJsonObject> NbFileBucket::DeleteFile(const string &file_name, const s
     if (rest_result.IsSuccess()) {
         const NbHttpResponse &http_response = rest_result.GetSuccessData();
         NbJsonObject json(http_response.GetBody());
-        result.SetSuccessData(json);
+        NbFileMetadata metadata(bucket_name_, json);
+        result.SetSuccessData(metadata);
     } else if (rest_result.IsRestError()) {
         result.SetRestError(rest_result.GetRestError());
     }

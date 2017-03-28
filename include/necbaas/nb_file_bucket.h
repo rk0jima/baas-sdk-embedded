@@ -110,6 +110,7 @@ class NbFileBucket {
 
     /**
      * ファイル削除.
+     * 処理成功データ(メタデータ)は、delete_markにtrueを指定したときのみ有効である。<br>
      * metadata内に設定されたfile_name等の情報を使用してファイル削除を行う。<br>
      * metadata内の file_name が空文字の場合、パラメータ不正のエラーを返す。<br>
      * bucket_nameが空文字の場合、バケット名不正のエラーを返す。
@@ -117,10 +118,11 @@ class NbFileBucket {
      * @param[in]   delete_mark   削除マークのみを行う
      * @return      処理結果
      */
-    NbResult<NbJsonObject> DeleteFile(const NbFileMetadata &metadata, bool delete_mark = false);
+    NbResult<NbFileMetadata> DeleteFile(const NbFileMetadata &metadata, bool delete_mark = false);
 
     /**
      * ファイル削除.
+     * 処理成功データ(メタデータ)は、delete_markにtrueを指定したときのみ有効である。<br>
      * file_nameが空文字の場合、パラメータ不正のエラーを返す。<br>
      * bucket_nameが空文字の場合、バケット名不正のエラーを返す。<br>
      * meta_etag, file_etagを設定しない場合は、空文字を設定すること。
@@ -128,7 +130,7 @@ class NbFileBucket {
      * @param[in]   delete_mark   削除マークのみを行う
      * @return      処理結果
      */
-    NbResult<NbJsonObject> DeleteFile(const std::string &file_name, const std::string &meta_etag,
+    NbResult<NbFileMetadata> DeleteFile(const std::string &file_name, const std::string &meta_etag,
                                       const std::string &file_etag, bool delete_mark = false);
 
     /**
