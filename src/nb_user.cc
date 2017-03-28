@@ -64,27 +64,14 @@ NbResult<NbUser> NbUser::Login(const shared_ptr<NbService> &service, const strin
     }
     body_json[kKeyPassword] = password;
 
-    //HTTPリクエスト作成
-    NbHttpRequestFactory request_factory = service->GetHttpRequestFactory();
-    if (request_factory.IsError()) {
-        //request構築エラー
-        result.SetResultCode(request_factory.GetError());
-        return result;
-    }
-    NbHttpRequest request = request_factory.Post(kLoginUrl)
-                                           .AppendHeader(kHeaderContentType, kHeaderContentTypeJson)
-                                           .Body(body_json.ToJsonString())
-                                           .SessionNone()
-                                           .Build();
-    //リクエスト実行
-    NbRestExecutor *executor = service->PopRestExecutor();
-    if (!executor) {
-        // 同時接続数オーバー
-        result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
-        return result;
-    }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout);
-    service->PushRestExecutor(executor);
+    NbResult<NbHttpResponse> rest_result = service->ExecuteRequest(
+        [&body_json](NbHttpRequestFactory &request_factory) -> NbHttpRequest {
+            return request_factory.Post(kLoginUrl)
+                                  .AppendHeader(kHeaderContentType, kHeaderContentTypeJson)
+                                  .Body(body_json.ToJsonString())
+                                  .SessionNone()
+                                  .Build();
+        }, timeout);
 
     result.SetResultCode(rest_result.GetResultCode());
 
@@ -116,29 +103,14 @@ NbResult<NbUser> NbUser::Logout(const shared_ptr<NbService> &service, int timeou
         return result;
     }
 
-    //HTTPリクエスト作成
-    NbHttpRequestFactory request_factory = service->GetHttpRequestFactory();
+    NbResult<NbHttpResponse> rest_result = service->ExecuteRequest(
+        [](NbHttpRequestFactory &request_factory) -> NbHttpRequest {
+            return request_factory.Delete(kLoginUrl)
+                                  .Build();
+        }, timeout);
 
-    // この時点で内部に保存しているセッショントークンをクリア(ログアウト)する
-    // RESTに使用するセッショントークンは、ファクトリインスタンスにコピーされている
+    // 一律セッショントークンクリア
     service->ClearSessionToken();
-
-    if (request_factory.IsError()) {
-        //request構築エラー
-        result.SetResultCode(request_factory.GetError());
-        return result;
-    }
-    NbHttpRequest request = request_factory.Delete(kLoginUrl)
-                                           .Build();
-    //リクエスト実行
-    NbRestExecutor *executor = service->PopRestExecutor();
-    if (!executor) {
-        // 同時接続数オーバー
-        result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
-        return result;
-    }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout);
-    service->PushRestExecutor(executor);
 
     result.SetResultCode(rest_result.GetResultCode());
 

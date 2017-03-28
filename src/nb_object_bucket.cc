@@ -45,29 +45,15 @@ NbResult<NbObject> NbObjectBucket::GetObject(const string &object_id, bool delet
         return result;
     }
 
-    //HTTPリクエスト作成
-    NbHttpRequestFactory request_factory = service_->GetHttpRequestFactory();
-    if (request_factory.IsError()) {
-        //request構築エラー
-        result.SetResultCode(request_factory.GetError());
-        return result;
-    }
-    request_factory.Get(kObjectsPath)
-                   .AppendPath("/" + bucket_name_ + "/" + object_id);
-    if (delete_mark) {
-        request_factory.AppendParam(kKeyDeleteMark, "1");
-    }
-    NbHttpRequest request = request_factory.Build();
-
-    //リクエスト実行
-    NbRestExecutor *executor = service_->PopRestExecutor();
-    if (!executor) {
-        // 同時接続数オーバー
-        result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
-        return result;
-    }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout_);
-    service_->PushRestExecutor(executor);
+    NbResult<NbHttpResponse> rest_result = service_->ExecuteRequest(
+        [this, &object_id, delete_mark](NbHttpRequestFactory &request_factory) -> NbHttpRequest {
+            request_factory.Get(kObjectsPath)
+                           .AppendPath("/" + bucket_name_ + "/" + object_id);
+            if (delete_mark) {
+                request_factory.AppendParam(kKeyDeleteMark, "1");
+            }
+            return request_factory.Build();
+        }, timeout_);
 
     result.SetResultCode(rest_result.GetResultCode());
 
@@ -96,26 +82,13 @@ NbResult<vector<NbObject>> NbObjectBucket::Query(const NbQuery &query, int *coun
         return result;
     }
 
-    //HTTPリクエスト作成
-    NbHttpRequestFactory request_factory = service_->GetHttpRequestFactory();
-    if (request_factory.IsError()) {
-        //request構築エラー
-        result.SetResultCode(request_factory.GetError());
-        return result;
-    }
-    NbHttpRequest request = request_factory.Get(kObjectsPath)
-                                           .AppendPath("/" + bucket_name_)
-                                           .Params(GetParams(query, count))
-                                           .Build();
-    //リクエスト実行
-    NbRestExecutor *executor = service_->PopRestExecutor();
-    if (!executor) {
-        // 同時接続数オーバー
-        result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
-        return result;
-    }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout_);
-    service_->PushRestExecutor(executor);
+    NbResult<NbHttpResponse> rest_result = service_->ExecuteRequest(
+        [this, &query, count](NbHttpRequestFactory &request_factory) -> NbHttpRequest {
+            return request_factory.Get(kObjectsPath)
+                           .AppendPath("/" + bucket_name_)
+                           .Params(GetParams(query, count))
+                           .Build();
+        }, timeout_);
 
     result.SetResultCode(rest_result.GetResultCode());
 

@@ -104,4 +104,55 @@ NbHttpRequestFactory NbService::GetHttpRequestFactory() {
     return NbHttpRequestFactory(endpoint_url_, tenant_id_, app_id_, app_key_,
                                 session_token_.GetSessionToken(), proxy_);
 }
+
+NbResult<NbHttpResponse> NbService::ExecuteCommon(
+    std::function<NbHttpRequest(NbHttpRequestFactory &)> create_request,
+    std::function<NbResult<NbHttpResponse>(NbRestExecutor *, const NbHttpRequest &)> executor_method) {
+                                                
+    NbResult<NbHttpResponse> result;
+    //HTTPリクエスト作成
+    NbHttpRequestFactory request_factory = GetHttpRequestFactory();
+    if (request_factory.IsError()) {
+        //request構築エラー
+        result.SetResultCode(request_factory.GetError());
+        return result;
+    }
+
+    //呼び元のリクエスト作成関数を実行
+    NbHttpRequest request = create_request(request_factory);
+
+    //リクエスト実行
+    NbRestExecutor *executor = PopRestExecutor();
+    if (!executor) {
+        // 同時接続数オーバー
+        result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
+        return result;
+    }
+    result = executor_method(executor, request);
+    PushRestExecutor(executor);
+    return result;
+}
+
+NbResult<NbHttpResponse> NbService::ExecuteRequest(std::function<NbHttpRequest(NbHttpRequestFactory &)> create_request, int timeout) {
+    return ExecuteCommon(create_request, 
+        [timeout](NbRestExecutor *executor, const NbHttpRequest &request) {
+            return executor->ExecuteRequest(request, timeout);
+        });
+}
+
+NbResult<NbHttpResponse> NbService::ExecuteFileDownload(std::function<NbHttpRequest(NbHttpRequestFactory &)> create_request,
+                                                        const std::string &file_path, int timeout) {
+    return ExecuteCommon(create_request,
+        [&file_path, timeout](NbRestExecutor *executor, const NbHttpRequest &request) {
+            return executor->ExecuteFileDownload(request, file_path, timeout);
+        });
+}
+
+NbResult<NbHttpResponse> NbService::ExecuteFileUpload(std::function<NbHttpRequest(NbHttpRequestFactory &)> create_request,
+                                                      const std::string &file_path, int timeout) {
+    return ExecuteCommon(create_request,
+        [&file_path, timeout](NbRestExecutor *executor, const NbHttpRequest &request) {
+            return executor->ExecuteFileUpload(request, file_path, timeout);
+        });
+}
 } //namespace necbaas

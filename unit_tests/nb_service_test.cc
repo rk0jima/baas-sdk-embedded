@@ -17,6 +17,25 @@ static const string kProxy{"proxyUrl"};
 static const string kSessionToken{"sessionToken"};
 static const time_t kExpireAt{0x12345678};
 
+class NbServiceTest : public NbService {
+    public:
+        NbServiceTest(const std::string &endpoint_url, const std::string &tenant_id,
+                    const std::string &app_id, const std::string &app_key, const std::string &proxy)
+            : NbService(endpoint_url, tenant_id, app_id, app_key, proxy) {}
+
+        NbRestExecutor *PopRestExecutorTest() {
+            return PopRestExecutor();
+        }
+
+        void PushRestExecutorTest(NbRestExecutor *executor) {
+            PushRestExecutor(executor);
+        }
+
+        NbHttpRequestFactory HttpRequestFactoryTest() {
+            return GetHttpRequestFactory();
+        }
+};
+
 //NbService::CreateService(文字列あり)
 TEST(NbService, CreateService) {
     shared_ptr<NbService> service = NbService::CreateService(kEndPointUrl, kTenantId, kAppId, kAppKey, kProxy);
@@ -55,27 +74,27 @@ TEST(NbService, SessionToken) {
 
 //NbService(Executor)
 TEST(NbService, Executor) {
-    shared_ptr<NbService> service = NbService::CreateService(kEndPointUrl, kTenantId, kAppId, kAppKey, kProxy);
+    shared_ptr<NbServiceTest> service(new NbServiceTest(kEndPointUrl, kTenantId, kAppId, kAppKey, kProxy));
 
     // Pop → Push → Pop を実行
-    NbRestExecutor *executor = service->PopRestExecutor();
+    NbRestExecutor *executor = service->PopRestExecutorTest();
     EXPECT_NE(nullptr, executor);
 
-    service->PushRestExecutor(executor);
+    service->PushRestExecutorTest(executor);
 
-    NbRestExecutor *executor2 = service->PopRestExecutor();
+    NbRestExecutor *executor2 = service->PopRestExecutorTest();
 
     //１回目と２回目で取得したExecutorのポインタが同じであればOKとする
     EXPECT_EQ(executor, executor2);
 }
 
-//NbService(HttpRequestFactor)
-TEST(NbService, HttpRequestFactor) {
-    shared_ptr<NbService> service = NbService::CreateService(kEndPointUrl, kTenantId, kAppId, kAppKey, kProxy);
+//NbService(HttpRequestFactory)
+TEST(NbService, HttpRequestFactory) {
+    shared_ptr<NbServiceTest> service(new NbServiceTest(kEndPointUrl, kTenantId, kAppId, kAppKey, kProxy));
     NbSessionToken session_token(kSessionToken, kExpireAt);
     service->SetSessionToken(session_token);
 
-    NbHttpRequestFactory request_factory = service->GetHttpRequestFactory();
+    NbHttpRequestFactory request_factory = service->HttpRequestFactoryTest();
 
     EXPECT_EQ(kEndPointUrl, TestUtil::NbHttpRequestFactory_GetEndPointUrl(request_factory));
     EXPECT_EQ(kTenantId, TestUtil::NbHttpRequestFactory_GetTenantId(request_factory));

@@ -175,17 +175,23 @@ class NbApiGateway {
     std::string content_type_;                           /*!< Content-Type           */
 
     /**
+     * Content-Typeヘッダ判定.
+     * PSOT/PUTメソッドでボディが設定されている場合、Content-Typeが設定されているか確認する。
+     * @param[in]       body                ボディ
+     * @return  判定結果
+     * @retval  true    OK
+     * @retval  false   NG
+     */
+    bool CheckContentType(const std::string &body);
+
+    /**
      * Content-Typeヘッダ追加.
      * HTTPリクエストファクトリにContent-Typeを設定する。<br>
      * ボディが空の場合は何もしない。<br>
-     * ボディが存在するにも関わらずContent-Typeが空の場合はfalseを返す。
      * @param[in]       body                ボディ
      * @param[in,out]   request_factory     HTTPリクエストファクトリ
-     * @return  処理結果
-     * @retval  true    処理成功
-     * @retval  false   処理失敗
      */
-    bool AppendContentType(const std::string &body, NbHttpRequestFactory *request_factory);
+    void AppendContentType(const std::string &body, NbHttpRequestFactory *request_factory);
 
     /**
      * 予約ヘッダ名確認.

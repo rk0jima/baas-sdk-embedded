@@ -131,30 +131,36 @@ class NbService {
     /**
      * <b>[内部処理用]</b>
      * @internal
-     * <p>REST Executor 取り出し.</p>
-     * @return  REST Executor
-     * @retval  nullptr以外  取得成功
-     * @retval  nullptr      同時接続数オーバー
+     * <p>REST実行(データの送受信).</p>
+     * @param[in]   create_request  HTTPリクエスト作成関数ポインタ
+     * @param[in]   timeout         タイムアウト値(秒)
+     * @return      処理結果
      */
-    virtual NbRestExecutor *PopRestExecutor();
+    NbResult<NbHttpResponse> ExecuteRequest(std::function<NbHttpRequest(NbHttpRequestFactory &)> create_request, int timeout);
 
     /**
      * <b>[内部処理用]</b>
      * @internal
-     * <p>REST Executor 返却.</p>
-     * @param[in]   executor    REST Executor
+     * <p>ファイルダウンロード実行.</p>
+     * @param[in]   create_request  HTTPリクエスト作成関数ポインタ
+     * @param[in]   file_path       ファイルパス
+     * @param[in]   timeout         タイムアウト値(秒)
+     * @return      処理結果
      */
-    virtual void PushRestExecutor(NbRestExecutor *executor);
+    NbResult<NbHttpResponse> ExecuteFileDownload(std::function<NbHttpRequest(NbHttpRequestFactory &)> create_request,
+                                                 const std::string &file_path, int timeout);
 
     /**
      * <b>[内部処理用]</b>
      * @internal
-     * <p>HTTPリクエストファクトリ取得.</p>
-     * @param[in]   executor    RESTタイムアウト(秒)
-     * @return  リクエストファクトリ
+     * <p>ファイルアップロード実行.</p>
+     * @param[in]   create_request  HTTPリクエスト作成関数ポインタ
+     * @param[in]   file_path       ファイルパス
+     * @param[in]   timeout         タイムアウト値(秒)
+     * @return      処理結果
      */
-    NbHttpRequestFactory GetHttpRequestFactory();
-
+    NbResult<NbHttpResponse> ExecuteFileUpload(std::function<NbHttpRequest(NbHttpRequestFactory &)> create_request,
+                                               const std::string &file_path, int timeout);
    private:
     std::string app_id_;                    /*!< アプリケーションID */
     std::string app_key_;                   /*!< アプリケーションキー */
@@ -171,6 +177,37 @@ class NbService {
      */
     NbService(const std::string &endpoint_url, const std::string &tenant_id, const std::string &app_id,
               const std::string &app_key, const std::string &proxy);
+
+    /**
+     * REST Executor 取り出し.
+     * @return  REST Executor
+     * @retval  nullptr以外  取得成功
+     * @retval  nullptr      同時接続数オーバー
+     */
+    virtual NbRestExecutor *PopRestExecutor();
+
+    /**
+     * REST Executor 返却.
+     * @param[in]   executor    REST Executor
+     */
+    virtual void PushRestExecutor(NbRestExecutor *executor);
+
+    /**
+     * HTTPリクエストファクトリ取得.
+     * @param[in]   executor    RESTタイムアウト(秒)
+     * @return  リクエストファクトリ
+     */
+    NbHttpRequestFactory GetHttpRequestFactory();
+
+    /**
+     * REST実行(共通処理).
+     * @param[in]   create_request         HTTPリクエスト作成関数ポインタ
+     * @param[in]   executor_method        Executor関数ポインタ
+     * @return      処理結果
+     */
+    NbResult<NbHttpResponse> ExecuteCommon(
+        std::function<NbHttpRequest(NbHttpRequestFactory &)> create_request,
+        std::function<NbResult<NbHttpResponse>(NbRestExecutor *, const NbHttpRequest &)> executor_method);
 };
 }  // namespace necbaas
 #endif  // NECBAAS_NBSERVICE_H

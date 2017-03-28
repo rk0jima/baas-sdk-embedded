@@ -46,25 +46,12 @@ NbResult<int> NbFileBucket::DownloadFile(const string &file_name, const string &
         return result;
     }
 
-    //HTTPリクエスト作成
-    NbHttpRequestFactory request_factory = service_->GetHttpRequestFactory();
-    if (request_factory.IsError()) {
-        //request構築エラー
-        result.SetResultCode(request_factory.GetError());
-        return result;
-    }
-    NbHttpRequest request = request_factory.Get(kFilesPath)
-                                           .AppendPath("/" + bucket_name_ + "/" + curlpp::escape(file_name))
-                                           .Build();
-    //リクエスト実行
-    NbRestExecutor *executor = service_->PopRestExecutor();
-    if (!executor) {
-        // 同時接続数オーバー
-        result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
-        return result;
-    }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteFileDownload(request, file_path, timeout_);
-    service_->PushRestExecutor(executor);
+    NbResult<NbHttpResponse> rest_result = service_->ExecuteFileDownload(
+        [this, &file_name](NbHttpRequestFactory &request_factory) -> NbHttpRequest {
+            return request_factory.Get(kFilesPath)
+                                  .AppendPath("/" + bucket_name_ + "/" + curlpp::escape(file_name))
+                                  .Build();
+        }, file_path, timeout_);
 
     result.SetResultCode(rest_result.GetResultCode());
 
@@ -104,33 +91,19 @@ NbResult<NbFileMetadata> NbFileBucket::UploadNewFile(const string &file_name, co
         return result;
     }
 
-    //HTTPリクエスト作成
-    NbHttpRequestFactory request_factory = service_->GetHttpRequestFactory();
-    if (request_factory.IsError()) {
-        //request構築エラー
-        result.SetResultCode(request_factory.GetError());
-        return result;
-    }
-    request_factory.Post(kFilesPath)
-                   .AppendPath("/" + bucket_name_ + "/" + curlpp::escape(file_name))
-                   .AppendHeader(kHeaderContentType, content_type);
-    if (!acl.empty()) {
-        request_factory.AppendHeader(kHeaderXAcl, acl);
-    }
-    if (cache_disable) {
-        request_factory.AppendParam(kKeyCacheDisabled, "true");
-    }
-    NbHttpRequest request = request_factory.Build();
-
-    //リクエスト実行
-    NbRestExecutor *executor = service_->PopRestExecutor();
-    if (!executor) {
-        // 同時接続数オーバー
-        result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
-        return result;
-    }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteFileUpload(request, file_path, timeout_);
-    service_->PushRestExecutor(executor);
+    NbResult<NbHttpResponse> rest_result = service_->ExecuteFileUpload(
+        [this, &file_name, &content_type, &acl, cache_disable](NbHttpRequestFactory &request_factory) -> NbHttpRequest {
+            request_factory.Post(kFilesPath)
+                           .AppendPath("/" + bucket_name_ + "/" + curlpp::escape(file_name))
+                           .AppendHeader(kHeaderContentType, content_type);
+            if (!acl.empty()) {
+                request_factory.AppendHeader(kHeaderXAcl, acl);
+            }
+            if (cache_disable) {
+                request_factory.AppendParam(kKeyCacheDisabled, "true");
+            }
+            return request_factory.Build();
+        }, file_path, timeout_);
 
     result.SetResultCode(rest_result.GetResultCode());
 
@@ -184,35 +157,21 @@ NbResult<NbFileMetadata> NbFileBucket::UploadUpdateFile(const string &file_name,
         return result;
     }
 
-    //HTTPリクエスト作成
-    NbHttpRequestFactory request_factory = service_->GetHttpRequestFactory();
-    if (request_factory.IsError()) {
-        //request構築エラー
-        result.SetResultCode(request_factory.GetError());
-        return result;
-    }
-    request_factory.Put(kFilesPath)
-                   .AppendPath("/" + bucket_name_ + "/" + curlpp::escape(file_name));
-    if (!content_type.empty()) {
-        request_factory.AppendHeader(kHeaderContentType, content_type);
-    }
-    if (!meta_etag.empty()) {
-        request_factory.AppendParam(kKeyMetaETag, meta_etag);
-    }
-    if (!file_etag.empty()) {
-        request_factory.AppendParam(kKeyFileETag, file_etag);
-    }
-    NbHttpRequest request = request_factory.Build();
-
-    //リクエスト実行
-    NbRestExecutor *executor = service_->PopRestExecutor();
-    if (!executor) {
-        // 同時接続数オーバー
-        result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
-        return result;
-    }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteFileUpload(request, file_path, timeout_);
-    service_->PushRestExecutor(executor);
+    NbResult<NbHttpResponse> rest_result = service_->ExecuteFileUpload(
+        [this, &file_name, &content_type, &meta_etag, &file_etag](NbHttpRequestFactory &request_factory) -> NbHttpRequest {
+            request_factory.Put(kFilesPath)
+                           .AppendPath("/" + bucket_name_ + "/" + curlpp::escape(file_name));
+            if (!content_type.empty()) {
+                request_factory.AppendHeader(kHeaderContentType, content_type);
+            }
+            if (!meta_etag.empty()) {
+                request_factory.AppendParam(kKeyMetaETag, meta_etag);
+            }
+            if (!file_etag.empty()) {
+                request_factory.AppendParam(kKeyFileETag, file_etag);
+            }
+            return request_factory.Build();
+        }, file_path, timeout_);
 
     result.SetResultCode(rest_result.GetResultCode());
 
@@ -253,35 +212,21 @@ NbResult<NbFileMetadata> NbFileBucket::DeleteFile(const string &file_name, const
         return result;
     }
 
-    //HTTPリクエスト作成
-    NbHttpRequestFactory request_factory = service_->GetHttpRequestFactory();
-    if (request_factory.IsError()) {
-        //request構築エラー
-        result.SetResultCode(request_factory.GetError());
-        return result;
-    }
-    request_factory.Delete(kFilesPath)
-                   .AppendPath("/" + bucket_name_ + "/" + curlpp::escape(file_name));
-    if (!meta_etag.empty()) {
-        request_factory.AppendParam(kKeyMetaETag, meta_etag);
-    }
-    if (!file_etag.empty()) {
-        request_factory.AppendParam(kKeyFileETag, file_etag);
-    }
-    if (delete_mark) {
-        request_factory.AppendParam(kKeyDeleteMark, "1");
-    }
-    NbHttpRequest request = request_factory.Build();
-
-    //リクエスト実行
-    NbRestExecutor *executor = service_->PopRestExecutor();
-    if (!executor) {
-        // 同時接続数オーバー
-        result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
-        return result;
-    }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout_);
-    service_->PushRestExecutor(executor);
+    NbResult<NbHttpResponse> rest_result = service_->ExecuteRequest(
+        [this, &file_name, &meta_etag, &file_etag, delete_mark](NbHttpRequestFactory &request_factory) -> NbHttpRequest {
+            request_factory.Delete(kFilesPath)
+                           .AppendPath("/" + bucket_name_ + "/" + curlpp::escape(file_name));
+            if (!meta_etag.empty()) {
+                request_factory.AppendParam(kKeyMetaETag, meta_etag);
+            }
+            if (!file_etag.empty()) {
+                request_factory.AppendParam(kKeyFileETag, file_etag);
+            }
+            if (delete_mark) {
+                request_factory.AppendParam(kKeyDeleteMark, "1");
+            }
+            return request_factory.Build();
+        }, timeout_);
 
     result.SetResultCode(rest_result.GetResultCode());
 
@@ -309,32 +254,18 @@ NbResult<vector<NbFileMetadata>> NbFileBucket::GetFiles(bool published, bool del
         return result;
     }
 
-    //HTTPリクエスト作成
-    NbHttpRequestFactory request_factory = service_->GetHttpRequestFactory();
-    if (request_factory.IsError()) {
-        //request構築エラー
-        result.SetResultCode(request_factory.GetError());
-        return result;
-    }
-    request_factory.Get(kFilesPath)
-                   .AppendPath("/" + bucket_name_);
-    if (published) {
-        request_factory.AppendParam(kKeyPublished, "1");
-    }
-    if (delete_mark) {
-        request_factory.AppendParam(kKeyDeleteMark, "1");
-    }
-    NbHttpRequest request = request_factory.Build();
-
-    //リクエスト実行
-    NbRestExecutor *executor = service_->PopRestExecutor();
-    if (!executor) {
-        // 同時接続数オーバー
-        result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
-        return result;
-    }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout_);
-    service_->PushRestExecutor(executor);
+    NbResult<NbHttpResponse> rest_result = service_->ExecuteRequest(
+        [this, &published, delete_mark](NbHttpRequestFactory &request_factory) -> NbHttpRequest {
+            request_factory.Get(kFilesPath)
+                           .AppendPath("/" + bucket_name_);
+            if (published) {
+                request_factory.AppendParam(kKeyPublished, "1");
+            }
+            if (delete_mark) {
+                request_factory.AppendParam(kKeyDeleteMark, "1");
+            }
+            return request_factory.Build();
+        }, timeout_);
 
     result.SetResultCode(rest_result.GetResultCode());
 

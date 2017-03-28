@@ -59,31 +59,17 @@ NbResult<NbObject> NbObject::PartUpdateObject(const NbJsonObject &json, bool acl
         body_json.PutJsonObject(kKeyAcl, acl_.ToJsonObject());
     }    
 
-    //HTTPリクエスト作成
-    NbHttpRequestFactory request_factory = service_->GetHttpRequestFactory();
-    if (request_factory.IsError()) {
-        //request構築エラー
-        result.SetResultCode(request_factory.GetError());
-        return result;
-    }
-    request_factory.Put(kObjectsPath)
-                   .AppendPath("/" + bucket_name_ + "/" + object_id_)
-                   .AppendHeader(kHeaderContentType, kHeaderContentTypeJson)
-                   .Body(body_json.ToJsonString());
-    if (!etag_.empty()) {
-        request_factory.AppendParam(kKeyETag, etag_);
-    }
-    NbHttpRequest request = request_factory.Build();
-
-    //リクエスト実行
-    NbRestExecutor *executor = service_->PopRestExecutor();
-    if (!executor) {
-        // 同時接続数オーバー
-        result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
-        return result;
-    }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout_);
-    service_->PushRestExecutor(executor);
+    NbResult<NbHttpResponse> rest_result = service_->ExecuteRequest(
+        [this, &body_json](NbHttpRequestFactory &request_factory) -> NbHttpRequest {
+            request_factory.Put(kObjectsPath)
+                           .AppendPath("/" + bucket_name_ + "/" + object_id_)
+                           .AppendHeader(kHeaderContentType, kHeaderContentTypeJson)
+                           .Body(body_json.ToJsonString());
+            if (!etag_.empty()) {
+                request_factory.AppendParam(kKeyETag, etag_);
+            }
+            return request_factory.Build();
+        }, timeout_);
 
     result.SetResultCode(rest_result.GetResultCode());
 
@@ -118,32 +104,18 @@ NbResult<NbObject> NbObject::DeleteObject(bool delete_mark) {
         return result;
     }
 
-    //HTTPリクエスト作成
-    NbHttpRequestFactory request_factory = service_->GetHttpRequestFactory();
-    if (request_factory.IsError()) {
-        //request構築エラー
-        result.SetResultCode(request_factory.GetError());
-        return result;
-    }
-    request_factory.Delete(kObjectsPath)
-                   .AppendPath("/" + bucket_name_ + "/" + object_id_);
-    if (!etag_.empty()) {
-        request_factory.AppendParam(kKeyETag, etag_);
-    }
-    if (delete_mark) {
-        request_factory.AppendParam(kKeyDeleteMark, "1");
-    }
-    NbHttpRequest request = request_factory.Build();
-
-    //リクエスト実行
-    NbRestExecutor *executor = service_->PopRestExecutor();
-    if (!executor) {
-        // 同時接続数オーバー
-        result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
-        return result;
-    }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout_);
-    service_->PushRestExecutor(executor);
+    NbResult<NbHttpResponse> rest_result = service_->ExecuteRequest(
+        [this, delete_mark](NbHttpRequestFactory &request_factory) -> NbHttpRequest {
+            request_factory.Delete(kObjectsPath)
+                           .AppendPath("/" + bucket_name_ + "/" + object_id_);
+            if (!etag_.empty()) {
+                request_factory.AppendParam(kKeyETag, etag_);
+            }
+            if (delete_mark) {
+                request_factory.AppendParam(kKeyDeleteMark, "1");
+            }
+            return request_factory.Build();
+        }, timeout_);
 
     result.SetResultCode(rest_result.GetResultCode());
 
@@ -179,54 +151,39 @@ NbResult<NbObject> NbObject::Save(bool acl) {
         return result;
     }
 
-    //HTTPリクエスト作成
-    NbHttpRequestFactory request_factory = service_->GetHttpRequestFactory();
-    if (request_factory.IsError()) {
-        //request構築エラー
-        result.SetResultCode(request_factory.GetError());
-        return result;
-    }
-
     NbJsonObject json(*this);
     RemoveReservationFields(&json);
-    
-    if (object_id_.empty()) { //新規
-        if (acl) {
-            json.PutJsonObject(kKeyAcl, acl_.ToJsonObject());
-        }
 
-        request_factory.Post(kObjectsPath)
-                       .AppendPath("/" + bucket_name_)
-                       .AppendHeader(kHeaderContentType, kHeaderContentTypeJson)
-                       .Body(json.ToJsonString());
-    } else { //更新
-        json.PutJsonObject(kKeyAcl, acl_.ToJsonObject());
-        if (!created_time_.empty()) {
-            json[kKeyCreatedAt] = created_time_;
-        }
+    NbResult<NbHttpResponse> rest_result = service_->ExecuteRequest(
+        [this, &json, acl](NbHttpRequestFactory &request_factory) -> NbHttpRequest {
+            if (object_id_.empty()) { //新規
+                if (acl) {
+                    json.PutJsonObject(kKeyAcl, acl_.ToJsonObject());
+                }
 
-        NbJsonObject json_full;
-        json_full.PutJsonObject("$full_update", json);
+                request_factory.Post(kObjectsPath)
+                               .AppendPath("/" + bucket_name_)
+                               .AppendHeader(kHeaderContentType, kHeaderContentTypeJson)
+                               .Body(json.ToJsonString());
+            } else { //更新
+                json.PutJsonObject(kKeyAcl, acl_.ToJsonObject());
+                if (!created_time_.empty()) {
+                    json[kKeyCreatedAt] = created_time_;
+                }
 
-        request_factory.Put(kObjectsPath)
-                       .AppendPath("/" + bucket_name_ + "/" + object_id_)
-                       .AppendHeader(kHeaderContentType, kHeaderContentTypeJson)
-                       .Body(json_full.ToJsonString());
-        if (!etag_.empty()) {
-            request_factory.AppendParam(kKeyETag, etag_);
-        }
-    }
-    NbHttpRequest request = request_factory.Build();
+                NbJsonObject json_full;
+                json_full.PutJsonObject("$full_update", json);
 
-    //リクエスト実行
-    NbRestExecutor *executor = service_->PopRestExecutor();
-    if (!executor) {
-        // 同時接続数オーバー
-        result.SetResultCode(NbResultCode::NB_ERROR_CONNECTION_OVER);
-        return result;
-    }
-    NbResult<NbHttpResponse> rest_result = executor->ExecuteRequest(request, timeout_);
-    service_->PushRestExecutor(executor);
+                request_factory.Put(kObjectsPath)
+                               .AppendPath("/" + bucket_name_ + "/" + object_id_)
+                               .AppendHeader(kHeaderContentType, kHeaderContentTypeJson)
+                               .Body(json_full.ToJsonString());
+                if (!etag_.empty()) {
+                    request_factory.AppendParam(kKeyETag, etag_);
+                }
+            }
+            return request_factory.Build();
+        }, timeout_);
 
     result.SetResultCode(rest_result.GetResultCode());
 
