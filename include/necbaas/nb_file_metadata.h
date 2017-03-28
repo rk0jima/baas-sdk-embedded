@@ -108,6 +108,14 @@ class NbFileMetadata {
      */
     bool IsCacheDisabled() const;
 
+    /**
+     * 論理削除状態取得.
+     * @return          論理削除状態
+     * @retval  true    論理削除
+     * @retval  false   論理削除されていない
+     */
+    bool IsDeleted() const;
+
    private:
     std::string file_name_;      /*!< ファイル名 */
     std::string content_type_;   /*!< Content-Type */
@@ -118,8 +126,9 @@ class NbFileMetadata {
     std::string meta_etag_;      /*!< メタデータのETag */
     std::string file_etag_;      /*!< ファイル本体のETag */
     bool cache_disabled_{false}; /*!< キャッシュ禁止フラグ */
+    bool deleted_{false};        /*!< 削除マーク */
 
     std::string parent_bucket_name_; /*!< バケット名 */
 };
-}  // n.hamespace necbaas
+}  // namespace necbaas
 #endif  // NECBAAS_NBFILEMETADATA_H

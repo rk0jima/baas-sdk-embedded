@@ -31,6 +31,7 @@ NbFileMetadata::NbFileMetadata(const std::string &bucket_name, const NbJsonObjec
     meta_etag_ = json.GetString(kKeyMetaETag);
     file_etag_ = json.GetString(kKeyFileETag);
     cache_disabled_ = json.GetBoolean(kKeyCacheDisabled);
+    deleted_ = json.GetBoolean(kKeyDeleted);
 }
 
 // デストラクタ.
@@ -70,5 +71,9 @@ const string &NbFileMetadata::GetFileETag() const {
 
 bool NbFileMetadata::IsCacheDisabled() const {
     return cache_disabled_;
+}
+
+bool NbFileMetadata::IsDeleted() const {
+    return deleted_;
 }
 } //namespace necbaas
