@@ -433,7 +433,65 @@ TEST(NbApiGateway, Headers) {
     apigw.AddHeader("Haeder-D", kEmpty);
     EXPECT_EQ(exp_header, apigw.GetHeaders());
 
+    // Content-Typeは無視
     apigw.AddHeader("Content-Type", "application/json");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+    apigw.AddHeader("CONTENT-TYPE", "application/json");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+    apigw.AddHeader("content-type", "application/json");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+
+    // Content-Lengthは無視
+    apigw.AddHeader("Content-Length", "12345");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+    apigw.AddHeader("CONTENT-LENGTH", "12345");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+    apigw.AddHeader("content-length", "12345");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+
+    // X-Application-Idは無視
+    apigw.AddHeader("X-Application-Id", "appid");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+    apigw.AddHeader("X-APPLICATION-ID", "appid");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+    apigw.AddHeader("x-application-id", "appid");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+
+    // X-Application-Keyは無視
+    apigw.AddHeader("X-Application-Key", "appkey");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+    apigw.AddHeader("X-APPLICATION-KEY", "appkey");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+    apigw.AddHeader("x-application-key", "appkey");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+
+    // X-Session-Tokenは無視
+    apigw.AddHeader("X-Session-Token", "token");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+    apigw.AddHeader("X-SESSION-TOKEN", "token");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+    apigw.AddHeader("x-session-token", "token");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+
+    // Hostは無視
+    apigw.AddHeader("Host", "hostname");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+    apigw.AddHeader("HOST", "hostname");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+    apigw.AddHeader("host", "hostname");
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+
+    // User-Agentは、大文字小文字を問わない
+    apigw.AddHeader("User-Agent", "agent1");
+    exp_header.insert(std::make_pair("User-Agent", "agent1"));
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+    exp_header.erase("User-Agent");
+    apigw.AddHeader("USER-AGENT", "agent2");
+    exp_header.insert(std::make_pair("User-Agent", "agent2"));
+    EXPECT_EQ(exp_header, apigw.GetHeaders());
+    exp_header.erase("User-Agent");
+    apigw.AddHeader("user-agent", "agent3");
+    exp_header.insert(std::make_pair("User-Agent", "agent3"));
     EXPECT_EQ(exp_header, apigw.GetHeaders());
 
     apigw.AddHeader("Haeder-A", "Value-A");

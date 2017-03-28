@@ -51,6 +51,13 @@ extern int GetFileSize(const std::string &file_name);
  */
 extern NbJsonType ConvertJsonType(Json::ValueType json_type);
 
+/**
+ * 文字列比較(大文字小文字区別なし).
+ * @param[in]   str1       文字列１
+ * @param[in]   str2       文字列２
+ * @return      比較結果  
+ */
+extern bool CompareCaseInsensitiveString(std::string str1, std::string str2);
 } //namespace NbUtility
 } //namespace necbaas
 

@@ -89,7 +89,16 @@ class NbApiGateway {
     /**
      * HTTPヘッダ追加.
      * HTTPヘッダ情報を追加する。<br>
-     * Content-Typeは、SetContentType()を使用すること。本メソッドでContent-Typeを設定しても無視される。<br>
+     * Content-Typeは、SetContentType()を使用すること。<br>
+     * 以下のヘッダ名は、本メソッドで設定しても無視される。
+     * - Content-Type
+     * - Content-Length
+     * - X-Application-Id
+     * - X-Application-Key
+     * - X-Session-Token
+     * - Host
+     *
+     * User-Agentは、1つのみ設定可能。2つ目以降は上書きされる。<br>
      * ヘッダ名、ヘッダ値のいずれかが空文字の場合は追加しない。
      * @param[in]   name        ヘッダ名
      * @param[in]   value       ヘッダ値
@@ -177,6 +186,16 @@ class NbApiGateway {
      * @retval  false   処理失敗
      */
     bool AppendContentType(const std::string &body, NbHttpRequestFactory *request_factory);
+
+    /**
+     * 予約ヘッダ名確認.
+     * ヘッダ名が予約ヘッダ名であるかどうか確認する。
+     * @param[in]       name        ヘッダ名
+     * @return  確認結果
+     * @retval  true    予約ヘッダ名である
+     * @retval  false   予約ヘッダ名でない
+     */
+    bool IsReservedHeaderName(const std::string &name) const;
 };
 }  // namespace necbaas
 #endif  // NECBAAS_NBAPIGATEWAY_H

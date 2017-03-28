@@ -81,5 +81,11 @@ NbJsonType ConvertJsonType(Json::ValueType json_type) {
             return NbJsonType::NB_JSON_NULL;
     }
 }
+
+bool CompareCaseInsensitiveString(std::string str1, std::string str2) {
+    std::transform(str1.begin(), str1.end(), str1.begin(), ::tolower);
+    std::transform(str2.begin(), str2.end(), str2.begin(), ::tolower);
+    return (str1 == str2);
+}
 }  // namespace NbUtility
 }  // namespace necbaas

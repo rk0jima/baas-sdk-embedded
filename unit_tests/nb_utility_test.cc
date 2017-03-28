@@ -97,4 +97,14 @@ TEST(NbUtility, ConvertJsonType) {
     EXPECT_EQ(NbJsonType::NB_JSON_NULL, NbUtility::ConvertJsonType(Json::nullValue));
     EXPECT_EQ(NbJsonType::NB_JSON_NULL, NbUtility::ConvertJsonType(static_cast<Json::ValueType>(100)));
 }
+
+//NbUtility::CompareCaseInsensitiveString
+TEST(NbUtility, CompareCaseInsensitiveString) {
+    EXPECT_TRUE(NbUtility::CompareCaseInsensitiveString(string("Test-String123"), string("test-string123")));
+    EXPECT_TRUE(NbUtility::CompareCaseInsensitiveString(string("Test-String123"), string("TEST-STRING123")));
+    EXPECT_FALSE(NbUtility::CompareCaseInsensitiveString(string("Test-String123"), string("Test-String")));
+    EXPECT_FALSE(NbUtility::CompareCaseInsensitiveString(string("TestString"), string("Test-String")));
+    EXPECT_FALSE(NbUtility::CompareCaseInsensitiveString(string("Test-String123"), string("")));
+    EXPECT_TRUE(NbUtility::CompareCaseInsensitiveString(string(""), string("")));
+}
 } //namespace necbaas

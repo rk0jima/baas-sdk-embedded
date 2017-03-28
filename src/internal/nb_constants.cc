@@ -47,6 +47,7 @@ const string kHeaderUserAgentDefault = "baas embedded sdk";
 const string kHeaderContentLength = "Content-Length";
 const string kHeaderXContentLength = "X-Content-Length";
 const string kHeaderXAcl = "X-ACL";
+const string kHeaderHost = "Host";
 
 //
 // Key

@@ -48,6 +48,7 @@ extern const std::string kHeaderUserAgentDefault;   /*!< HTTPヘッダ: User Age
 extern const std::string kHeaderContentLength;      /*!< HTTPヘッダ: Content-Length */
 extern const std::string kHeaderXContentLength;     /*!< HTTPヘッダ: X-Content-Length */
 extern const std::string kHeaderXAcl;               /*!< HTTPヘッダ: X-ACL */
+extern const std::string kHeaderHost;               /*!< HTTPヘッダ: Host */
 
 //
 // Key

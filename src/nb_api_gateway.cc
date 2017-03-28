@@ -11,6 +11,7 @@
  */
 
 #include "necbaas/nb_api_gateway.h"
+#include "necbaas/internal/nb_utility.h"
 #include "necbaas/internal/nb_logger.h"
 
 namespace necbaas {
@@ -129,7 +130,16 @@ void NbApiGateway::AddHeader(const string &name, const string &value) {
         return;
     }
 
-    if (name != kHeaderContentType) {
+    if (IsReservedHeaderName(name)) {
+        // SDKで自動付与するヘッダは無視する
+        return ;
+    }
+
+    if (NbUtility::CompareCaseInsensitiveString(name, kHeaderUserAgent)) {
+        // User-Agentは、大文字小文字を意識し、上書き更新
+        headers_.erase(kHeaderUserAgent);
+        headers_.insert(std::make_pair(kHeaderUserAgent, value));
+    } else {
         headers_.insert(std::make_pair(name, value));
     }
 }
@@ -167,5 +177,15 @@ const string &NbApiGateway::GetContentType() const {
 
 void NbApiGateway::SetContentType(const string &content_type) {
     content_type_ = content_type;
+}
+
+bool NbApiGateway::IsReservedHeaderName(const string &name) const { 
+    // SDKで自動付与するヘッダかどうかの判別
+    return (NbUtility::CompareCaseInsensitiveString(name, kHeaderContentType) ||
+            NbUtility::CompareCaseInsensitiveString(name, kHeaderContentLength) ||
+            NbUtility::CompareCaseInsensitiveString(name, kHeaderAppId) ||
+            NbUtility::CompareCaseInsensitiveString(name, kHeaderAppKey) ||
+            NbUtility::CompareCaseInsensitiveString(name, kHeaderSessionToken) ||
+            NbUtility::CompareCaseInsensitiveString(name, kHeaderHost));
 }
 } //namespace necbaas
