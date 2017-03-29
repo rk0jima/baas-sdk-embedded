@@ -5,7 +5,10 @@ Embedded SDK
 
 ビルド手順
 ----------
+ビルド環境をGitリポジトリから取得した場合は、以下手順を実施して外部ライブラリの取得を実施してください。
 
+    $ git submodule init
+    $ git submodule update
 任意のビルド用ディレクトリを作成し、cmakeを実行する。  
 ここでは、トップディレクトリにbuildディレクトリを作成する。
 

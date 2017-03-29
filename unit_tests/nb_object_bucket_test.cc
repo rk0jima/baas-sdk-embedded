@@ -97,7 +97,7 @@ static NbResult<NbHttpResponse> GetObject1(const NbHttpRequest &request, int tim
     return tmp_result;
 }
 
-//NbObjectBuckt::GetObject(delete_markなし)
+//NbObjectBucket::GetObject(delete_markなし)
 TEST_F(NbObjectBucketTest, GetObject1) {
     SetExpect(&executor_, &GetObject1);
 
@@ -131,7 +131,7 @@ static NbResult<NbHttpResponse> GetObject2(const NbHttpRequest &request, int tim
     return tmp_result;
 }
 
-//NbObjectBuckt::GetObject(delete_markあり)
+//NbObjectBucket::GetObject(delete_markあり)
 TEST_F(NbObjectBucketTest, GetObject2) {
     SetExpect(&executor_, &GetObject2);
 
@@ -165,7 +165,7 @@ static NbResult<NbHttpResponse> GetObjectRestError(const NbHttpRequest &request,
     return tmp_result;
 }
 
-//NbObjectBuckt::GetObject(RESTエラー)
+//NbObjectBucket::GetObject(RESTエラー)
 TEST_F(NbObjectBucketTest, GetObjectRestError) {
     SetExpect(&executor_, &GetObjectRestError);
 
@@ -193,7 +193,7 @@ static NbResult<NbHttpResponse> GetObjectFatal(const NbHttpRequest &request, int
     return tmp_result;
 }
 
-//NbObjectBuckt::GetObject(エラー)
+//NbObjectBucket::GetObject(エラー)
 TEST_F(NbObjectBucketTest, GetObjectFatal) {
     SetExpect(&executor_, &GetObjectFatal);
 
@@ -273,7 +273,7 @@ static NbResult<NbHttpResponse> Query1(const NbHttpRequest &request, int timeout
     return tmp_result;
 }
 
-//NbObjectBuckt::Query(queryなし、ヒットなし、countなし)
+//NbObjectBucket::Query(queryなし、ヒットなし、countなし)
 TEST_F(NbObjectBucketTest, Query1) {
     SetExpect(&executor_, &Query1);
 
@@ -307,7 +307,7 @@ static NbResult<NbHttpResponse> Query2(const NbHttpRequest &request, int timeout
     return tmp_result;
 }
 
-//NbObjectBuckt::Query(queryあり、ヒットあり、countあり)
+//NbObjectBucket::Query(queryあり、ヒットあり、countあり)
 TEST_F(NbObjectBucketTest, Query2) {
     SetExpect(&executor_, &Query2);
 
@@ -348,7 +348,7 @@ static NbResult<NbHttpResponse> QueryRestError(const NbHttpRequest &request, int
     return tmp_result;
 }
 
-//NbObjectBuckt::Query(RESTエラー)
+//NbObjectBucket::Query(RESTエラー)
 TEST_F(NbObjectBucketTest, QueryRestError) {
     SetExpect(&executor_, &QueryRestError);
 
@@ -377,7 +377,7 @@ static NbResult<NbHttpResponse> QueryFatal(const NbHttpRequest &request, int tim
     return tmp_result;
 }
 
-//NbObjectBuckt::Query(RESTエラー)
+//NbObjectBucket::Query(エラー)
 TEST_F(NbObjectBucketTest, QueryFatal) {
     SetExpect(&executor_, &QueryFatal);
 
@@ -458,7 +458,7 @@ static NbResult<NbHttpResponse> GetParams(const NbHttpRequest &request, int time
     return tmp_result;
 }
 
-//NbObjectBuckt::GetParams
+//NbObjectBucket::GetParams
 TEST_F(NbObjectBucketTest, GetParams) {
     SetExpect(&executor_, &GetParams);
 
@@ -479,7 +479,7 @@ TEST_F(NbObjectBucketTest, GetParams) {
     NbResult<std::vector<NbObject>> result = object_bucket.Query(query, &count);
 }
 
-//NbObjectBuckt::NewObject
+//NbObjectBucket::NewObject
 TEST_F(NbObjectBucketTest, NewObject) {
     shared_ptr<NbService> service = NbService::CreateService(kEmpty, kTenantId, kAppId, kAppKey, kProxy);
 

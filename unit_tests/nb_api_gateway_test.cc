@@ -374,7 +374,7 @@ TEST(NbApiGateway, ExecuteCustomApiNameEmpty) {
     EXPECT_EQ(NbResultCode::NB_ERROR_API_NAME, result.GetResultCode());    
 }
 
-//NbApiGateway::Logout(request_factory構築失敗)
+//NbApiGateway::ExecuteCustomApi(request_factory構築失敗)
 TEST(NbApiGateway, ExecuteCustomApiRequestFactoryFail) {
     shared_ptr<NbService> service = NbService::CreateService(kEmpty, kTenantId, kAppId, kAppKey, kProxy);
 
@@ -387,7 +387,7 @@ TEST(NbApiGateway, ExecuteCustomApiRequestFactoryFail) {
     EXPECT_EQ(NbResultCode::NB_ERROR_ENDPOINT_URL, result.GetResultCode());
 }
 
-//NbApiGateway::Logout(接続数オーバー)
+//NbApiGateway::ExecuteCustomApi(接続数オーバー)
 TEST_F(NbApiGatewayTest, ExecuteCustomApiConnectionOver) {
     SetExpect(nullptr, nullptr);
 
