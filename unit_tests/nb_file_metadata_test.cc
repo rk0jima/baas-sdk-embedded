@@ -23,7 +23,8 @@ const string kMetadata{R"(
       "updatedAt":"2017-02-23T07:37:58.926Z",
       "metaETag":"942e51ba-e34f-486d-ba83-851e5b9e3452",
       "fileETag":"34031d14-73ec-49c2-b03e-810b5793ef4f",
-      "cacheDisabled":true})"};
+      "cacheDisabled":true,
+      "_deleted":true})"};
 
 const string kEmpty{""};
 
@@ -39,6 +40,7 @@ TEST(NbFileMetadata, NbFileMetadata) {
     EXPECT_EQ(kEmpty, metadata.GetMetaETag());
     EXPECT_EQ(kEmpty, metadata.GetFileETag());
     EXPECT_FALSE(metadata.IsCacheDisabled());
+    EXPECT_FALSE(metadata.IsDeleted());
 }
 
 //NbFileMetadata Json引数でのコンストラクタ
@@ -54,5 +56,6 @@ TEST(NbFileMetadata, NbFileMetadataJson) {
     EXPECT_EQ(string("942e51ba-e34f-486d-ba83-851e5b9e3452"), metadata.GetMetaETag());
     EXPECT_EQ(string("34031d14-73ec-49c2-b03e-810b5793ef4f"), metadata.GetFileETag());
     EXPECT_TRUE(metadata.IsCacheDisabled());
+    EXPECT_TRUE(metadata.IsDeleted());
 }
 } //namespace necbaas
