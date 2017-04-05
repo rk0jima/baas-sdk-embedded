@@ -88,15 +88,15 @@ void CompareObject(const NbObject &obj1, const NbObject &obj2) {
 
 // ファイルの中身の比較
 void CompareFiledata(const string &file1, const string &file2, int size) {
-    char *buffer = new char(size);
+    std::unique_ptr<char> buffer(new char[size]);
     std::ifstream file_stream;
     file_stream.open(file1, std::ios::in | std::ios::binary);
-    file_stream.read((char *)buffer, size);
-    string file1_data(buffer, size);
+    file_stream.read(buffer.get(), size);
+    string file1_data(buffer.get(), size);
 
     file_stream.open(file2, std::ios::in | std::ios::binary);
-    file_stream.read((char *)buffer, size);
-    string file2_data(buffer, size);
+    file_stream.read(buffer.get(), size);
+    string file2_data(buffer.get(), size);
 
     EXPECT_EQ(file1_data, file2_data);
 }

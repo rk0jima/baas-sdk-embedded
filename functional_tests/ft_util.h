@@ -1,6 +1,7 @@
 #ifndef NECBAAS_FTUTIL_H
 #define NECBAAS_FTUTIL_H
 
+#include "gtest/gtest.h"
 #include <string>
 #include <vector>
 #include <ctime>
@@ -32,6 +33,20 @@ void CompareObject(const NbObject &obj1, const NbObject &obj2);
 
 // ファイルの中身の比較
 void CompareFiledata(const std::string &file1, const std::string &file2, int size);
+
+// vectorの比較(順不同)
+template <typename T>
+void CompareList(std::vector<T> container1, std::vector<T> container2) {
+    ASSERT_EQ(container1.size(), container2.size());
+    std::list<T> list1, list2;
+    for (int i = 0; i < container1.size(); ++i) {
+        list1.push_back(container1[i]);
+        list2.push_back(container2[i]);
+    }
+    list1.sort();
+    list2.sort();
+    EXPECT_EQ(list1, list2);    
+}
 
 // std::tmの比較
 void CompareTime(const std::tm &tm1, const std::tm &tm2, bool equal = true);

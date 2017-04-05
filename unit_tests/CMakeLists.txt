@@ -8,7 +8,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/gmock)
 link_directories(${CMAKE_BINARY_DIR}/libs)
 link_directories(${CMAKE_BINARY_DIR}/libs/curlpp)
 link_directories(${CMAKE_BINARY_DIR}/libs/json/src/lib_json)
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/gtest)
+if(IA32)
+    link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/gtest/32)
+else()
+    link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/gtest/64)
+endif()
 
 link_libraries(curl)
 

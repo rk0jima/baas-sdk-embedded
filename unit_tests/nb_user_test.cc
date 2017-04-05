@@ -402,7 +402,7 @@ TEST(NbUser, ImportExpired) {
     shared_ptr<NbService> service = NbService::CreateService(kEndPointUrl, kTenantId, kAppId, kAppKey, kProxy);
 
     NbJsonObject json(kUserJson);
-    json["expire"] = std::time(nullptr) - 1;
+    json["expire"] = (int64_t)(std::time(nullptr) - 1);
     EXPECT_EQ(NbResultCode::NB_ERROR_SESSION_EXPIRED, NbUser::ImportCurrentLogin(service, json.ToJsonString()));
 }
 } //namespace necbaas

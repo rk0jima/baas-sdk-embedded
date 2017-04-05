@@ -6,7 +6,11 @@ include_directories(${PROJECT_SOURCE_DIR}/unit_tests/include)
 link_directories(${CMAKE_BINARY_DIR}/libs)
 link_directories(${CMAKE_BINARY_DIR}/libs/curlpp)
 link_directories(${CMAKE_BINARY_DIR}/libs/json/src/lib_json)
-link_directories(${PROJECT_SOURCE_DIR}/unit_tests/libs/gtest)
+if(IA32)
+    link_directories(${PROJECT_SOURCE_DIR}/unit_tests/libs/gtest/32)
+else()
+    link_directories(${PROJECT_SOURCE_DIR}/unit_tests/libs/gtest/64)
+endif()
 
 link_libraries(curl)
 

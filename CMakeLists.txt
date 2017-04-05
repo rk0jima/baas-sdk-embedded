@@ -1,12 +1,20 @@
 cmake_minimum_required(VERSION 3.1)
 project(embeddedsdk)
 
+option(IA32 "Build for IA-32 architectures" OFF)
+option(UNIT_TESTS "Compile unit tests" OFF)
+option(FUNCTIONAL_TESTS "Compile functional tests" OFF)
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQURED ON)
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(CMAKE_CXX_FLAGS "-std=c++11 -DELPP_THREAD_SAFE -DELPP_STL_LOGGING -DELPP_NO_LOG_TO_FILE -DELPP_NO_LOG_TO_FILE -DNB_DEBUG -O0 -g3")
+    set(CMAKE_CXX_FLAGS "-std=c++11 -DNB_DEBUG -O0 -g3")
 else()
-    set(CMAKE_CXX_FLAGS "-std=c++11 -DELPP_THREAD_SAFE -DELPP_STL_LOGGING -DELPP_NO_LOG_TO_FILE -DELPP_NO_LOG_TO_FILE")
+    set(CMAKE_CXX_FLAGS "-std=c++11")
+endif()
+
+if(IA32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
 endif()
 
 # バージョン番号
@@ -42,7 +50,14 @@ set(LIB_SOURCE_FILES
     src/internal/nb_utility.cc
     )
 
+# easylogging++.hをSDK環境に取り込む
+file(COPY libs/easyloggingpp/src/easylogging++.h DESTINATION ${PROJECT_SOURCE_DIR}/include/necbaas/internal)
+
 set(CMAKE_INSTALL_LIBDIR lib)
+
+# JSONCPPのテストを無効化
+set(JSONCPP_WITH_TESTS OFF CACHE BOOL "Compile and (for jsoncpp_check) run JsonCpp test executables")
+set(JSONCPP_WITH_POST_BUILD_UNITTEST OFF CACHE BOOL "Automatically run unit-tests as a post build step")
 add_subdirectory(libs/json)
 add_subdirectory(libs/curlpp)
 
@@ -58,6 +73,11 @@ set_target_properties(embeddedsdk PROPERTIES VERSION ${serial} SOVERSION ${soser
 install(TARGETS embeddedsdk LIBRARY DESTINATION lib)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/necbaas/ DESTINATION "include/necbaas")
 
-enable_testing()
-add_subdirectory(unit_tests)
-add_subdirectory(functional_tests)
+if(UNIT_TESTS)
+    enable_testing()
+    add_subdirectory(unit_tests)
+endif()
+if(FUNCTIONAL_TESTS)
+    enable_testing()
+    add_subdirectory(functional_tests)
+endif()

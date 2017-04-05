@@ -1,0 +1,6 @@
+set(RASPBERRYPI_ROOT $ENV{HOME}/raspberrypi)
+set(RASPBERRYPI_TOOLCHAIN ${RASPBERRYPI_ROOT}/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf)
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_VERSION 1)
+set(CMAKE_C_COMPILER ${RASPBERRYPI_TOOLCHAIN}/bin/arm-linux-gnueabihf-gcc)
+set(CMAKE_CXX_COMPILER ${RASPBERRYPI_TOOLCHAIN}/bin/arm-linux-gnueabihf-g++)

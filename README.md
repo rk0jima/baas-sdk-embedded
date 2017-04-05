@@ -2,6 +2,17 @@ Embedded SDK
 ===================================
 
 # ビルド&テスト手順
+ここではIntel社製プロセッサ向けのビルド手順を示す。  
+RaspberryPi向けのクロスコンパイル手順は、cross/raspberrypi/README.md を参照。
+
+事前準備
+--------
+ビルドターゲットに対して必要なパッケージをインストールする。
+* libcurl-devel(Intel 64bit)
+* glibc-devel.i686(Intel 32bit)
+* libcurl-devel.i686(Intel 32bit)
+
+    $ sudo yum install libcurl-devel
 
 ビルド手順
 ----------
@@ -13,14 +24,17 @@ Embedded SDK
 ここでは、トップディレクトリにbuildディレクトリを作成する。
 
 [ビルドオプション]
-* `-DCMAKE_BUILD_TYPE`：Debug版/Release版(デフォルト)
+* `-DUNIT_TESTS`：UTコードのコンパイルON/OFF (デフォルト OFF)
+* `-DFUNCTIONAL_TESTS`：FTコードのコンパイルON/OFF (デフォルト OFF)
+* `-DCMAKE_BUILD_TYPE`：Debug版/Release版 (デフォルト Release版)
 * `-DCMAKE_INSTALL_PREFIX`：インストール先ディレクトリ（デフォルト /usr/local/）
+* `-DIA32`：Intel 32ビットプロセッサ向けビルドON/OFF (デフォルト OFF)
 
-例としてDebug版、"out"ディレクトリを設定する。
+例としてUTコンパイルあり、Debug版、"out"ディレクトリ、Intel 32bitビルドを設定する。
 
     $ mkdir build
     $ cd build
-    $ cmake3 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=../out/ ../
+    $ cmake3 -DUNIT_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=../out/ -DIA32=ON ../
 ビルド実行
 
     $ make
@@ -55,3 +69,13 @@ Coverage
 カバレッジが100%に到達していないものは、\*.gcov ファイルを確認する。  
 ヘッダファイルは、インライン展開された.ccファイルで計測されるため、
 個別でgcovコマンドで確認する。
+
+Doxygen
+-------
+* `doc/Doxyfile` : ユーザ向けSDK APIリファレンス作成用
+* `doc/Doxyfile.inter` : 内部APIを含む全クラスのAPIリファレンス作成用
+
+HTML作成(doxygen 1.8.12で動作確認済)
+
+    $ doxygen [doxyfile]
+

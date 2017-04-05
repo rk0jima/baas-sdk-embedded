@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "ft_data.h"
+#include "ft_util.h"
 #include "necbaas/nb_user.h"
 
 namespace necbaas {
@@ -38,7 +39,7 @@ TEST_F(NbUserFT, LoginWithUsername) {
     EXPECT_EQ(kUserName, user.GetUserName());
     EXPECT_EQ(kEmail, user.GetEmail());
     EXPECT_EQ(kOptions, user.GetOptions());
-    EXPECT_EQ(kGroups, user.GetGroups());
+    FTUtil::CompareList(kGroups, user.GetGroups());
     EXPECT_FALSE(user.GetUserId().empty());
     EXPECT_NE(0, user.GetCreatedTime().tm_year);
     EXPECT_NE(0, user.GetUpdatedTime().tm_year);
@@ -51,7 +52,7 @@ TEST_F(NbUserFT, LoginWithUsername) {
     EXPECT_EQ(kUserName, current_user.GetUserName());
     EXPECT_EQ(kEmail, current_user.GetEmail());
     EXPECT_EQ(kOptions, current_user.GetOptions());
-    EXPECT_EQ(kGroups, current_user.GetGroups());
+    FTUtil::CompareList(kGroups, current_user.GetGroups());
     EXPECT_FALSE(current_user.GetUserId().empty());
     EXPECT_NE(0, current_user.GetCreatedTime().tm_year);
     EXPECT_NE(0, current_user.GetUpdatedTime().tm_year);
@@ -67,7 +68,7 @@ TEST_F(NbUserFT, LoginWithEmail) {
     EXPECT_EQ(kUserName, user.GetUserName());
     EXPECT_EQ(kEmail, user.GetEmail());
     EXPECT_EQ(kOptions, user.GetOptions());
-    EXPECT_EQ(kGroups, user.GetGroups());
+    FTUtil::CompareList(kGroups, user.GetGroups());
     EXPECT_FALSE(user.GetUserId().empty());
     EXPECT_NE(0, user.GetCreatedTime().tm_year);
     EXPECT_NE(0, user.GetUpdatedTime().tm_year);
@@ -80,7 +81,7 @@ TEST_F(NbUserFT, LoginWithEmail) {
     EXPECT_EQ(kUserName, current_user.GetUserName());
     EXPECT_EQ(kEmail, current_user.GetEmail());
     EXPECT_EQ(kOptions, current_user.GetOptions());
-    EXPECT_EQ(kGroups, current_user.GetGroups());
+    FTUtil::CompareList(kGroups, current_user.GetGroups());
     EXPECT_FALSE(current_user.GetUserId().empty());
     EXPECT_NE(0, current_user.GetCreatedTime().tm_year);
     EXPECT_NE(0, current_user.GetUpdatedTime().tm_year);

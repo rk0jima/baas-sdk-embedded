@@ -13,7 +13,12 @@
 #ifndef NECBAAS_NBLOGGER_H
 #define NECBAAS_NBLOGGER_H
 
-#include "easylogging++.h"
+#define ELPP_THREAD_SAFE
+#define ELPP_STL_LOGGING
+#define ELPP_NO_LOG_TO_FILE
+#define ELPP_NO_LOG_TO_FILE
+
+#include "necbaas/internal/easylogging++.h"
 
 namespace necbaas {
 
