@@ -24,6 +24,8 @@ static NbLogger nb_logger;
 NbLogger::NbLogger() {
     // 一律ファイル保存なしに設定
     el::Loggers::reconfigureAllLoggers(el::ConfigurationType::ToFile, std::string("false"));
+    // FatalログでABORTしない
+    el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
 
 // "necbaas"用の設定
 #ifdef NB_DEBUG
