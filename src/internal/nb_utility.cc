@@ -20,7 +20,7 @@ namespace NbUtility {
 using std::string;
 
 std::tm DateStringToTm(const string &time) {
-    std::tm out_tm;
+    std::tm out_tm = {};
     string time_string = time;  // strptimeで使用するためコピーする
 
     char *ret = strptime(time_string.c_str(), "%Y-%m-%dT%T", &out_tm);
