@@ -15,7 +15,7 @@ static const string kAppKey{"applicationKey"};
 static const string kProxy{"proxyUrl"};
 
 static const string kSessionToken{"sessionToken"};
-static const time_t kExpireAt{0x12345678};
+static const time_t kExpireAt = std::time(nullptr) + 600;
 
 class NbServiceTest : public NbService {
     public:

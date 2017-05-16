@@ -36,6 +36,15 @@ class NbSessionToken {
     static bool IsExpired(std::time_t expire_at);
 
     /**
+     * セッショントークン有効確認.
+     * セッショントークンが空文字、または、有効期限切れの場合に無効と判定する。
+     * @return  処理結果
+     * @retval  true    有効
+     * @retval  false   無効
+     */
+    bool IsEnabled() const;
+
+    /**
      * コンストラクタ.
      */
     NbSessionToken();
@@ -63,7 +72,7 @@ class NbSessionToken {
      * セッショントークン取得.
      * @return      セッショントークン文字列
      */
-    const std::string &GetSessionToken() const;
+    const std::string GetSessionToken() const;
 
     /**
      * 有効期限取得.
@@ -81,7 +90,7 @@ class NbSessionToken {
      * ユーザ情報取得.
      * @return      ユーザ情報
      */
-    const NbUserEntity &GetSessionUserEntity() const;
+    const NbUserEntity GetSessionUserEntity() const;
 
     /**
      * セッショントークン破棄.

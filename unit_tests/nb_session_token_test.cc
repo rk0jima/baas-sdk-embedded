@@ -17,7 +17,7 @@ const string kUserEntity{R"(
      "expire":1488454881})"};
 
 const string kSessionToken{"sessionToken"};
-const int kExpireAt{0x12345678};
+const int kExpireAt = std::time(nullptr) + 600;
 
 //NbSessionToken::NbSessionToken(デフォルトコンストラクタ)
 TEST(NbSessionToken, NbSessionToken) {
@@ -33,6 +33,34 @@ TEST(NbSessionToken, NbSessionTokenJson) {
     EXPECT_EQ(kSessionToken, session_token.GetSessionToken());
     EXPECT_EQ(kExpireAt, static_cast<int>(session_token.GetExpireAt()));
     EXPECT_EQ(string(""), session_token.GetSessionUserEntity().GetUserName());
+}
+
+//NbSessionToken::Get系(有効期限切れ)
+TEST(NbSessionToken, GetSessionTokenExpire) {
+    NbSessionToken session_token(kSessionToken, std::time(nullptr));
+    NbJsonObject json(kUserEntity);
+    NbUserEntity entity(json);
+    session_token.SetSessionUserEntity(entity);
+
+    EXPECT_EQ(string(""), session_token.GetSessionToken());
+    EXPECT_EQ(0, session_token.GetExpireAt());
+    EXPECT_EQ(string(""), session_token.GetSessionUserEntity().GetId());
+    EXPECT_EQ(string(""), session_token.GetSessionUserEntity().GetUserName());
+    EXPECT_EQ(string(""), session_token.GetSessionUserEntity().GetEmail());
+}
+
+//NbSessionToken::Get系(セッショントークン空)
+TEST(NbSessionToken, GetSessionTokenEmpty) {
+    NbSessionToken session_token(string(), kExpireAt);
+    NbJsonObject json(kUserEntity);
+    NbUserEntity entity(json);
+    session_token.SetSessionUserEntity(entity);
+
+    EXPECT_EQ(string(""), session_token.GetSessionToken());
+    EXPECT_EQ(0, session_token.GetExpireAt());
+    EXPECT_EQ(string(""), session_token.GetSessionUserEntity().GetId());
+    EXPECT_EQ(string(""), session_token.GetSessionUserEntity().GetUserName());
+    EXPECT_EQ(string(""), session_token.GetSessionUserEntity().GetEmail());
 }
 
 //NbSessionToken::UserEntity&Clear

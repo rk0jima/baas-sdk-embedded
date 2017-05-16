@@ -131,10 +131,7 @@ NbResult<NbUser> NbUser::Logout(const shared_ptr<NbService> &service, int timeou
 }
 
 bool NbUser::IsLoggedIn(const shared_ptr<NbService> &service) {
-    NbSessionToken session_token = service->GetSessionToken();
-
-    return (!session_token.GetSessionToken().empty() &&
-            !NbSessionToken::IsExpired(session_token.GetExpireAt()));
+    return service->GetSessionToken().IsEnabled();
 }
 
 time_t NbUser::GetSessionTokenExpiration(const shared_ptr<NbService> &service) {
