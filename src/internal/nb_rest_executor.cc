@@ -269,12 +269,15 @@ void NbRestExecutor::SetOptCommon(const NbHttpRequest &request, NbHttpHandler &h
 NbResult<NbHttpResponse> NbRestExecutor::MakeResult(NbHttpHandler &http_handler, NbResultCode result_code) {
     NbResult<NbHttpResponse> result(result_code);
 
-    if (result.IsFatalError()) {
+    NbHttpResponse response = http_handler.Parse();
+
+    // エラーが発生していてもステータスコードを受信している場合はRestErrorに上書きする
+    // ただし、エラー発生かつ200台の場合は処理矛盾とみなし結果的にエラーを返すこととする
+    if (result.IsFatalError() && response.GetStatusCode() == 0) {
         NBLOG(ERROR) << "Execute HTTP request error.";
         return result;
     }
 
-    NbHttpResponse response = http_handler.Parse();
     response.Dump();
     result.SetSuccessData(response);
 
