@@ -111,9 +111,14 @@ NbQuery &NbQuery::ConcatQueries(const string &op, vector<NbQuery> queries) {
     }
 
     Json::Value json;
-    json[0] = conditions_;
+
+    // 自インスタンスが空の場合はスキップ
+    if (!conditions_.empty()) {
+        json[0] = conditions_;
+    }
+
     for (int i = 0; i < queries.size(); ++i) {
-        json[i + 1] = queries[i].GetConditions();
+        json.append(queries[i].GetConditions());
     }
 
     conditions_.clear();

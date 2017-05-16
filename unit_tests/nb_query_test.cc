@@ -274,6 +274,13 @@ TEST(NbQuery, Or) {
     EXPECT_EQ(kDoubleValue, conditons["$or"][1][kDoubleKey]["$lt"].asDouble());
     EXPECT_EQ(kStringValue, conditons["$or"][2][kStringKey]["$gt"].asString());
     EXPECT_TRUE(conditons["$or"][3][kBoolKey]["$ne"].asBool());
+
+    NbQuery empty_query;
+    empty_query.Or(queries);
+    conditons = empty_query.GetConditions();
+    EXPECT_EQ(kDoubleValue, conditons["$or"][0][kDoubleKey]["$lt"].asDouble());
+    EXPECT_EQ(kStringValue, conditons["$or"][1][kStringKey]["$gt"].asString());
+    EXPECT_TRUE(conditons["$or"][2][kBoolKey]["$ne"].asBool());
 }
 
 //NbQuery Conditions.Or(queries空)
@@ -306,6 +313,13 @@ TEST(NbQuery, And) {
     EXPECT_EQ(kDoubleValue, conditons["$and"][1][kDoubleKey]["$lt"].asDouble());
     EXPECT_EQ(kStringValue, conditons["$and"][2][kStringKey]["$gt"].asString());
     EXPECT_TRUE(conditons["$and"][3][kBoolKey]["$ne"].asBool());
+
+    NbQuery empty_query;
+    empty_query.And(queries);
+    conditons = empty_query.GetConditions();
+    EXPECT_EQ(kDoubleValue, conditons["$and"][0][kDoubleKey]["$lt"].asDouble());
+    EXPECT_EQ(kStringValue, conditons["$and"][1][kStringKey]["$gt"].asString());
+    EXPECT_TRUE(conditons["$and"][2][kBoolKey]["$ne"].asBool());
 }
 
 //NbQuery Conditions.And(queries空)
