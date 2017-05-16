@@ -154,14 +154,14 @@ TEST_F(NbObjectFT, PartUpdateObject) {
 
     NbAcl acl;
     acl.AddEntry(NbAclPermission::WRITE ,"testUser");
-    object.SetAcl(acl);
 
     NbJsonObject json(R"({"UpdateKey": "UpdateValue"})");
+    json.PutJsonObject("ACL", acl.ToJsonObject());
 
     // 更新時間を変化させるためsleep
     sleep(1);
     NbObject original = object;
-    NbResult<NbObject> result = object.PartUpdateObject(json, true);
+    NbResult<NbObject> result = object.PartUpdateObject(json);
 
     // 戻り値確認
     ASSERT_TRUE(result.IsSuccess());

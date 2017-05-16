@@ -56,15 +56,16 @@ class NbObject : public NbJsonObject {
      * オブジェクトを部分更新する.
      * 部分更新用Jsonオブジェクトが空の場合は、パラメータエラーを返す。<br>
      * インスタンスに設定されているバケット名、オブジェクトIDが空文字の場合は、エラーを返す。<br>
-     * aclがtrueの場合は、インスタンスに設定されているデータを使用して更新する。<br>
-     * createdAtは、自インスタンスに設定されているデータを使用して更新する。空文字の場合は更新しない。<br>
-     * 部分更新用Jsonオブジェクトに予約名（_id, createdAt, updatedAt, ACL, etag,
-     * _deleted）が使用されている場合は削除する。
+     * インスタンスにETagが設定されている場合、ETagがリクエストパラメータに設定される。<br>
+     * <br><b>部分更新用Jsonオブジェクトに予約名を設定したときの動作</b><br>
+     * "ACL", "createdAt"フィールドを設定することで、ACL, 作成日時の更新が可能。<br>
+     * "_id"フィールドを設定した場合は、RESTエラーが返る。<br>
+     * "updatedAt", "etag"フィールドは無視される（サーバ側が算出した値が上書きされる）<br>
+     * "_deleted"フィールドは更新可能だが非推奨。DeleteObject()を使用してください。
      * @param[in]   json        部分更新用Jsonオブジェクト
-     * @param[in]   acl         ACL更新フラグ
      * @return      処理結果
      */
-    NbResult<NbObject> PartUpdateObject(const NbJsonObject &json, bool acl = false);
+    NbResult<NbObject> PartUpdateObject(const NbJsonObject &json);
 
     /**
      * オブジェクトを削除する.

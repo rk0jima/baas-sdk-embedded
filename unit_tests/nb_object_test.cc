@@ -89,7 +89,7 @@ static NbResult<NbHttpResponse> PartUpdateObject1(const NbHttpRequest &request, 
     return tmp_result;
 }
 
-//NbObject::PartUpdateObject(ACL更新なし、ETagあり)
+//NbObject::PartUpdateObject(予約フィールドなし,Etagあり)
 TEST_F(NbObjectTest, PartUpdateObject1) {
     SetExpect(&executor_, &PartUpdateObject1);
 
@@ -100,7 +100,6 @@ TEST_F(NbObjectTest, PartUpdateObject1) {
 
     object.SetCurrentParam(NbJsonObject(kDefaultObject));
     NbJsonObject json(kPartUpdateObject);
-    json["_id"] = "id";
     NbResult<NbObject> result = object.PartUpdateObject(json);
 
     // 戻り値確認
@@ -126,7 +125,12 @@ static NbResult<NbHttpResponse> PartUpdateObject2(const NbHttpRequest &request, 
     }
     EXPECT_EQ(1, check_header);
     NbJsonObject part_obj(kPartUpdateObject);
+    part_obj["_id"] = "ObjectId";
     part_obj.PutJsonObject("ACL", NbAcl::CreateAclForAnonymous().ToJsonObject());
+    part_obj["updatedAt"] = "2015-08-27T05:19:17.000Z";
+    part_obj["createdAt"] = "2014-08-27T05:19:17.000Z";
+    part_obj["etag"] = "etagValue";
+    part_obj["_deleted"] = true;
     EXPECT_EQ(part_obj.ToJsonString(), request.GetBody());
     EXPECT_EQ(10, timeout);
 
@@ -136,7 +140,12 @@ static NbResult<NbHttpResponse> PartUpdateObject2(const NbHttpRequest &request, 
     for (auto key : update_json.GetKeySet()) {
         resp_json[key] = update_json[key];
     }
+    resp_json["_id"] = "ObjectId";
     resp_json.PutJsonObject("ACL", NbAcl::CreateAclForAnonymous().ToJsonObject());
+    resp_json["updatedAt"] = "2015-08-27T05:19:17.000Z";
+    resp_json["createdAt"] = "2014-08-27T05:19:17.000Z";
+    resp_json["etag"] = "etagValue";
+    resp_json["_deleted"] = true;
     string body_str = resp_json.ToJsonString();
     std::vector<char> body(body_str.length());
     std::copy(body_str.c_str(), body_str.c_str() + body_str.length(), body.begin());
@@ -145,7 +154,7 @@ static NbResult<NbHttpResponse> PartUpdateObject2(const NbHttpRequest &request, 
     return tmp_result;
 }
 
-//NbObject::PartUpdateObject(ACL更新、ETagなし)
+//NbObject::PartUpdateObject(予約フィールドあり,Etagなし)
 TEST_F(NbObjectTest, PartUpdateObject2) {
     SetExpect(&executor_, &PartUpdateObject2);
 
@@ -155,20 +164,35 @@ TEST_F(NbObjectTest, PartUpdateObject2) {
     object.SetTimeout(10);
     EXPECT_EQ(10, object.GetTimeout());
     object.SetCurrentParam(NbJsonObject(kDefaultObject));
-    NbJsonObject json(kPartUpdateObject);
     object.SetETag(kEmpty);
-    object.SetAcl(NbAcl::CreateAclForAnonymous());
-    NbResult<NbObject> result = object.PartUpdateObject(json, true);
+    NbJsonObject json(kPartUpdateObject);
+    json["_id"] = "ObjectId";
+    json.PutJsonObject("ACL", NbAcl::CreateAclForAnonymous().ToJsonObject());
+    json["updatedAt"] = "2015-08-27T05:19:17.000Z";
+    json["createdAt"] = "2014-08-27T05:19:17.000Z";
+    json["etag"] = "etagValue";
+    json["_deleted"] = true;
+    NbResult<NbObject> result = object.PartUpdateObject(json);
 
     // 戻り値確認
     EXPECT_TRUE(result.IsSuccess());
     NbObject response = result.GetSuccessData();
     EXPECT_EQ(987, response.GetInt("intKey"));
     EXPECT_EQ("stringValue", response.GetString("stringKey"));
+    EXPECT_FALSE(response.IsMember("_id"));
     EXPECT_FALSE(response.IsMember("ACL"));
+    EXPECT_FALSE(response.IsMember("createdAt"));
+    EXPECT_FALSE(response.IsMember("updatedAt"));
+    EXPECT_FALSE(response.IsMember("etag"));
+    EXPECT_FALSE(response.IsMember("_deleted"));
     EXPECT_EQ(987, object.GetInt("intKey"));
     EXPECT_EQ("stringValue", object.GetString("stringKey"));
+    EXPECT_EQ("ObjectId", object.GetObjectId());
     EXPECT_EQ(NbAcl::CreateAclForAnonymous().ToJsonString(), object.GetAcl().ToJsonString());
+    EXPECT_EQ("2014-08-27T05:19:17.000Z", NbUtility::TmToDateString(object.GetCreatedTime()));
+    EXPECT_EQ("2015-08-27T05:19:17.000Z", NbUtility::TmToDateString(object.GetUpdatedTime()));
+    EXPECT_EQ("etagValue", object.GetETag());
+    EXPECT_TRUE(object.IsDeleteMark());
 }
 
 static NbResult<NbHttpResponse> PartUpdateObjectRestError(const NbHttpRequest &request, int timeout) {
@@ -878,11 +902,19 @@ TEST_F(NbObjectTest, SetCurrentParam) {
 }
 
 static NbResult<NbHttpResponse> RemoveReservationFields(const NbHttpRequest &request, int timeout) {
-    EXPECT_EQ(string("/objects/" + kBucketName + "/" + "521c36d4ac521e1ffa000007" + "?etag=8c92c97e-01a7-11e4-9598-53792c688d1b"),
+    EXPECT_EQ(string("/objects/" + kBucketName),
                      request.GetUrl().substr(request.GetUrl().find("/objects/")));
-    EXPECT_EQ(NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, request.GetMethod());
+    EXPECT_EQ(NbHttpRequestMethod::HTTP_REQUEST_TYPE_POST, request.GetMethod());
     EXPECT_EQ(4, request.GetHeaders().size());
-    EXPECT_EQ(NbJsonObject(kPartUpdateObject).ToJsonString(), request.GetBody());
+    int check_header = 0;
+    for (auto header : request.GetHeaders()) {
+        if (header.find("Content-Type: application/json") != std::string::npos) {
+            ++check_header;
+            continue;
+        }
+    }
+    EXPECT_EQ(1, check_header);
+    EXPECT_EQ(NbJsonObject(kSaveNew).ToJsonString(), request.GetBody());
     EXPECT_EQ(60, timeout);
 
     NbResult<NbHttpResponse> tmp_result(NbResultCode::NB_OK);
@@ -898,14 +930,14 @@ TEST_F(NbObjectTest, RemoveReservationFields) {
     shared_ptr<NbService> service(mock_service_);
 
     NbObject object(service, kBucketName);
-    object.SetCurrentParam(NbJsonObject(kDefaultObject));
-    NbJsonObject json(kPartUpdateObject);
-    json["_id"] = "id";
-    json["createdAt"] = "createdAt";
-    json["updatedAt"] = "updatedAt";
-    json["ACL"] = "ACL";
-    json["etag"] = "etag";
-    json["_deleted"] = "_deleted";
-    NbResult<NbObject> result = object.PartUpdateObject(json);
+    object.SetCurrentParam(NbJsonObject(kSaveNew));
+    object.SetAcl(NbAcl::CreateAclForAnonymous());
+    object["_id"] = "id";
+    object["createdAt"] = "createdAt";
+    object["updatedAt"] = "updatedAt";
+    object["ACL"] = "ACL";
+    object["etag"] = "etag";
+    object["_deleted"] = "_deleted";
+    NbResult<NbObject> result = object.Save();
 }
 } //namespace necbaas

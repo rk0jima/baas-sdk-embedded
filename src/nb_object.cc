@@ -27,7 +27,7 @@ NbObject::NbObject(const shared_ptr<NbService> &service, const string &bucket_na
 
 NbObject::~NbObject() {}
 
-NbResult<NbObject> NbObject::PartUpdateObject(const NbJsonObject &json, bool acl) {
+NbResult<NbObject> NbObject::PartUpdateObject(const NbJsonObject &json) {
     NBLOG(TRACE) << __func__;
 
     NbResult<NbObject> result;
@@ -53,18 +53,12 @@ NbResult<NbObject> NbObject::PartUpdateObject(const NbJsonObject &json, bool acl
         return result;
     }
 
-    NbJsonObject body_json = json;
-    RemoveReservationFields(&body_json);
-    if (acl) {
-        body_json.PutJsonObject(kKeyAcl, acl_.ToJsonObject());
-    }    
-
     NbResult<NbHttpResponse> rest_result = service_->ExecuteRequest(
-        [this, &body_json](NbHttpRequestFactory &request_factory) -> NbHttpRequest {
+        [this, &json](NbHttpRequestFactory &request_factory) -> NbHttpRequest {
             request_factory.Put(kObjectsPath)
                            .AppendPath("/" + bucket_name_ + "/" + object_id_)
                            .AppendHeader(kHeaderContentType, kHeaderContentTypeJson)
-                           .Body(body_json.ToJsonString());
+                           .Body(json.ToJsonString());
             if (!etag_.empty()) {
                 request_factory.AppendParam(kKeyETag, etag_);
             }
