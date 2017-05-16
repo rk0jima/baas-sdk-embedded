@@ -97,15 +97,15 @@ NbQuery &NbQuery::Not(const std::string &key) {
     return *this;
 }
 
-NbQuery &NbQuery::Or(const std::vector<NbQuery> queries) {
+NbQuery &NbQuery::Or(const std::vector<NbQuery> &queries) {
     return ConcatQueries("$or", queries);
 }
 
-NbQuery &NbQuery::And(const std::vector<NbQuery> queries) {
+NbQuery &NbQuery::And(const std::vector<NbQuery> &queries) {
     return ConcatQueries("$and", queries);
 }
 
-NbQuery &NbQuery::ConcatQueries(const string &op, vector<NbQuery> queries) {
+NbQuery &NbQuery::ConcatQueries(const string &op, const vector<NbQuery> &queries) {
     if (queries.empty()) {
         return *this;
     }

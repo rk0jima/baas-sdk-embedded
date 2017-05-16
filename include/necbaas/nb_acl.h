@@ -65,7 +65,7 @@ class NbAcl : public NbAclBase {
      * @param[in]   entry       ユーザID/グループ名のリスト
      * @return      ACL
      */
-    static NbAcl CreateAclFor(std::list<std::string> entries);
+    static NbAcl CreateAclFor(const std::list<std::string> &entries);
 
     /**
      * コンストラクタ.
@@ -114,7 +114,7 @@ class NbAcl : public NbAclBase {
      * JsonからACLをセットする.
      * @param[in]   json        Jsonオブジェクト
      */
-    void SetJson(NbJsonObject json) override;
+    void SetJson(const NbJsonObject &json) override;
 
     /**
      * Jsonオブジェクトに変換する.

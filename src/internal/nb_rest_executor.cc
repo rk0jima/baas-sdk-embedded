@@ -165,7 +165,7 @@ NbResult<NbHttpResponse> NbRestExecutor::ExecuteFileDownload(const NbHttpRequest
     return response;
 }
 
-bool NbRestExecutor::ValidateFileSize(const NbHttpResponse &response, const string &file_path) {
+bool NbRestExecutor::ValidateFileSize(const NbHttpResponse &response, const string &file_path) const {
     int header_value = 0;
 
     auto &headers = response.GetHeaders();

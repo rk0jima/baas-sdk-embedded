@@ -52,7 +52,7 @@ list<string> &NbAcl::GetListByPermission(NbAclPermission permission) {
     }
 }
 
-void NbAcl::SetJson(NbJsonObject json) {
+void NbAcl::SetJson(const NbJsonObject &json) {
     owner_ = json.GetString(kKeyOwner);
     json.GetJsonArray(kKeyAdmin).GetAllString(&admin_);
     SortUnique(&admin_);
@@ -96,7 +96,7 @@ NbAcl NbAcl::CreateAclFor(const string &entry) {
     return acl;
 }
 
-NbAcl NbAcl::CreateAclFor(list<string> entries) {
+NbAcl NbAcl::CreateAclFor(const list<string> &entries) {
     NbAcl acl;
     acl.SetRead(entries);
     acl.SetWrite(entries);

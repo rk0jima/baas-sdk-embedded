@@ -119,7 +119,7 @@ NbResult<vector<NbObject>> NbObjectBucket::Query(const NbQuery &query, int *coun
     return result;
 }
 
-multimap<string, string> NbObjectBucket::GetParams(const NbQuery &query, int *count) {
+multimap<string, string> NbObjectBucket::GetParams(const NbQuery &query, int *count) const {
     multimap<string, string> params;
 
     string param_string = query.GetConditionsString();
@@ -168,7 +168,7 @@ void NbObjectBucket::SetTimeout(int timeout) {
     timeout_ = timeout;
 }
 
-NbObject NbObjectBucket::NewObject() {
+NbObject NbObjectBucket::NewObject() const {
     NbObject object(service_, bucket_name_);
     return object;
 }

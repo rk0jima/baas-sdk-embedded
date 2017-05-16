@@ -84,7 +84,7 @@ class NbObjectBucket {
      * オブジェクト生成する.
      * @return      新規オブジェクト
      */
-    NbObject NewObject();
+    NbObject NewObject() const;
 
     /**
      * バケット名取得.
@@ -104,7 +104,7 @@ class NbObjectBucket {
      * @param[out]  count       件数取得
      * @return      リクエストパラメータ
      */
-    std::multimap<std::string, std::string> GetParams(const NbQuery &query, int *count);
+    std::multimap<std::string, std::string> GetParams(const NbQuery &query, int *count) const;
 };
 }  // namespace necbaas
 #endif  // NECBAAS_NBOBJECTBUCKET_H

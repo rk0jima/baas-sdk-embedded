@@ -102,7 +102,7 @@ protected:
      * @retval      true    ファイルサイズ一致
      * @retval      false   ファイルサイズ不一致 or X-Content-Lengthヘッダなし
      */
-    bool ValidateFileSize(const NbHttpResponse &response, const std::string &file_name);
+    bool ValidateFileSize(const NbHttpResponse &response, const std::string &file_name) const;
 
     /**
      * REST実行開始.

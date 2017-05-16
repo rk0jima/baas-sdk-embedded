@@ -95,7 +95,7 @@ bool NbJsonObject::GetBoolean(const string &key, bool default_value) const {
     return ret;
 }
 
-string NbJsonObject::GetString(const string &key, const string default_value) const {
+string NbJsonObject::GetString(const string &key, const string &default_value) const {
     string ret = default_value;
     if (value_.isMember(key) && value_[key].isString()) {
         ret = value_[key].asString();

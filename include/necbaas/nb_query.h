@@ -60,7 +60,7 @@ class NbQuery {
      * @return      this
      */
     template <typename T>
-    NbQuery &EqualTo(const std::string &key, T value) {
+    NbQuery &EqualTo(const std::string &key, const T &value) {
         if (!key.empty()) {
             if (typeid(T) == typeid(NbJsonObject)) {
                 return AddSimpleOp("$eq", key, value);
@@ -81,7 +81,7 @@ class NbQuery {
      * @return      this
      */
     template <typename T>
-    NbQuery &LessThan(const std::string &key, T value) {
+    NbQuery &LessThan(const std::string &key, const T &value) {
         return AddSimpleOp("$lt", key, value);
     }
 
@@ -95,7 +95,7 @@ class NbQuery {
      * @return      this
      */
     template <typename T>
-    NbQuery &LessThanOrEqual(const std::string &key, T value) {
+    NbQuery &LessThanOrEqual(const std::string &key, const T &value) {
         return AddSimpleOp("$lte", key, value);
     }
 
@@ -109,7 +109,7 @@ class NbQuery {
      * @return      this
      */
     template <typename T>
-    NbQuery &GreaterThan(const std::string &key, T value) {
+    NbQuery &GreaterThan(const std::string &key, const T &value) {
         return AddSimpleOp("$gt", key, value);
     }
 
@@ -123,7 +123,7 @@ class NbQuery {
      * @return      this
      */
     template <typename T>
-    NbQuery &GreaterThanOrEqual(const std::string &key, T value) {
+    NbQuery &GreaterThanOrEqual(const std::string &key, const T &value) {
         return AddSimpleOp("$gte", key, value);
     }
 
@@ -137,7 +137,7 @@ class NbQuery {
      * @return      this
      */
     template <typename T>
-    NbQuery &NotEquals(const std::string &key, T value) {
+    NbQuery &NotEquals(const std::string &key, const T &value) {
         return AddSimpleOp("$ne", key, value);
     }
 
@@ -205,7 +205,7 @@ class NbQuery {
      * @param[in]   queries     クエリ
      * @return      this
      */
-    NbQuery &Or(const std::vector<NbQuery> queries);
+    NbQuery &Or(const std::vector<NbQuery> &queries);
 
     /**
      * AND条件を生成する.
@@ -214,7 +214,7 @@ class NbQuery {
      * @param[in]   queries     クエリ
      * @return      this
      */
-    NbQuery &And(const std::vector<NbQuery> queries);
+    NbQuery &And(const std::vector<NbQuery> &queries);
 
     /**
      * ソート条件を設定する.
@@ -385,7 +385,7 @@ class NbQuery {
      * @return      this
      */
     template <typename T>
-    NbQuery &AddSimpleOpPrimitive(const std::string &op, const std::string &key, T value) {
+    NbQuery &AddSimpleOpPrimitive(const std::string &op, const std::string &key, const T &value) {
         if (!key.empty()) {
             if (op.empty()) {
                 conditions_[key] = value;
@@ -406,7 +406,7 @@ class NbQuery {
      * @return      this
      */
     template <typename T>
-    NbQuery &AddSimpleOpJson(const std::string &op, const std::string &key, T value) {
+    NbQuery &AddSimpleOpJson(const std::string &op, const std::string &key, const T &value) {
         if (!key.empty()) {
             if (op.empty()) {
                 conditions_[key] = value.GetSubstitutableValue();
@@ -488,7 +488,7 @@ class NbQuery {
      * @param[in]   queries   クエリ
      * @return      this
      */
-    NbQuery &ConcatQueries(const std::string &op, std::vector<NbQuery> queries);
+    NbQuery &ConcatQueries(const std::string &op, const std::vector<NbQuery> &queries);
 };
 }  // namespace necbaas
 #endif  // NECBAAS_NBQUERY_H

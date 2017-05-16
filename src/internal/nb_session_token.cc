@@ -39,7 +39,7 @@ void NbSessionToken::SetSessionToken(const string &session_token, time_t expire_
     return;
 }
 
-const string NbSessionToken::GetSessionToken() const {
+string NbSessionToken::GetSessionToken() const {
     // セッショントークンが無効の場合は初期値を返す
     if (!IsEnabled()) {
         return string();
@@ -60,7 +60,7 @@ void NbSessionToken::SetSessionUserEntity(const NbUserEntity &entity) {
     return;
 }
 
-const NbUserEntity NbSessionToken::GetSessionUserEntity() const { 
+NbUserEntity NbSessionToken::GetSessionUserEntity() const { 
     //  セッショントークンが無効の場合は初期値を返す
     if (!IsEnabled()) {
         return NbUserEntity();

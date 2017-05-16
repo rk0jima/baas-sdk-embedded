@@ -149,7 +149,7 @@ void NbHttpRequestFactory::CheckParameter() {
     }
 }
 
-string NbHttpRequestFactory::CreateRequestParams() {
+string NbHttpRequestFactory::CreateRequestParams() const {
     string converted_params;
     if (request_params_.empty()) {
         return converted_params;

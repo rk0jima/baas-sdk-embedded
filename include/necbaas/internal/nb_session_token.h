@@ -72,7 +72,7 @@ class NbSessionToken {
      * セッショントークン取得.
      * @return      セッショントークン文字列
      */
-    const std::string GetSessionToken() const;
+    std::string GetSessionToken() const;
 
     /**
      * 有効期限取得.
@@ -90,7 +90,7 @@ class NbSessionToken {
      * ユーザ情報取得.
      * @return      ユーザ情報
      */
-    const NbUserEntity GetSessionUserEntity() const;
+    NbUserEntity GetSessionUserEntity() const;
 
     /**
      * セッショントークン破棄.

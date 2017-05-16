@@ -171,7 +171,7 @@ class NbHttpRequestFactory {
      * メンバ変数に設定されたリストからリクエストパラメータ文字列を生成する
      * @return  リクエストパラメータ
      */
-    std::string CreateRequestParams();
+    std::string CreateRequestParams() const;
 
     /**
      * パラメータチェック.

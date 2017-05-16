@@ -135,7 +135,7 @@ class NbJsonObject {
      * @param[in]   default_value   取得できなかったときに返す値
      * @return      Value
      */
-    std::string GetString(const std::string &key, const std::string default_value = "") const;
+    std::string GetString(const std::string &key, const std::string &default_value = "") const;
 
     /**
      * Jsonオブジェクト取得.

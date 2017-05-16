@@ -226,7 +226,7 @@ class NbUser {
      * @param[in]   service     サービスインスタンス
      * @param[in]   json        Jsonオブジェクト形式のログインユーザ情報
      */
-    static void SetCurrentUser(const std::shared_ptr<NbService> &service, NbJsonObject json);
+    static void SetCurrentUser(const std::shared_ptr<NbService> &service, const NbJsonObject &json);
 };
 }  // namespace necbaas
 #endif  // NECBAAS_NBUSER_H

@@ -120,7 +120,7 @@ void NbAclBase::SetDelete(const list<string> &del) {
     SetEntries(del, &delete_);
 }
 
-void NbAclBase::SetJson(NbJsonObject json) {
+void NbAclBase::SetJson(const NbJsonObject &json) {
     json.GetJsonArray(kKeyRead).GetAllString(&read_);
     SortUnique(&read_);
     json.GetJsonArray(kKeyWrite).GetAllString(&write_);

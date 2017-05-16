@@ -128,7 +128,7 @@ class NbAclBase {
      * JsonからACLをセットする.
      * @param[in]   json        Jsonオブジェクト
      */
-    virtual void SetJson(NbJsonObject json);
+    virtual void SetJson(const NbJsonObject &json);
 
     /**
      * Jsonオブジェクトに変換する.

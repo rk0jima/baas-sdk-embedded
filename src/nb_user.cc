@@ -176,7 +176,7 @@ NbResultCode NbUser::ImportCurrentLogin(const shared_ptr<NbService> &service, co
     return NbResultCode::NB_OK;
 }
 
-void NbUser::SetCurrentUser(const shared_ptr<NbService> &service, NbJsonObject json) {
+void NbUser::SetCurrentUser(const shared_ptr<NbService> &service, const NbJsonObject &json) {
     string token = json.GetString(kKeySessionToken);
     time_t expire = (time_t)json.GetInt64(kKeyExpire);
 
