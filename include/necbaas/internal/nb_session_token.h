@@ -42,7 +42,7 @@ class NbSessionToken {
      * @retval  true    有効
      * @retval  false   無効
      */
-    bool IsEnabled() const;
+    bool IsValid() const;
 
     /**
      * コンストラクタ.

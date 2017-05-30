@@ -29,7 +29,7 @@ bool NbSessionToken::IsExpired(std::time_t expire_at) {
     return (expire_at <= std::time(nullptr));
 }
 
-bool NbSessionToken::IsEnabled() const {
+bool NbSessionToken::IsValid() const {
     return !(session_token_.empty() || IsExpired(expire_at_));
 }
 
@@ -41,7 +41,7 @@ void NbSessionToken::SetSessionToken(const string &session_token, time_t expire_
 
 string NbSessionToken::GetSessionToken() const {
     // セッショントークンが無効の場合は初期値を返す
-    if (!IsEnabled()) {
+    if (!IsValid()) {
         return string();
     }
     return session_token_;
@@ -49,7 +49,7 @@ string NbSessionToken::GetSessionToken() const {
 
 time_t NbSessionToken::GetExpireAt() const { 
     // セッショントークンが無効の場合は0を返す
-    if (!IsEnabled()) {
+    if (!IsValid()) {
         return 0;
     }
     return expire_at_; 
@@ -62,7 +62,7 @@ void NbSessionToken::SetSessionUserEntity(const NbUserEntity &entity) {
 
 NbUserEntity NbSessionToken::GetSessionUserEntity() const { 
     //  セッショントークンが無効の場合は初期値を返す
-    if (!IsEnabled()) {
+    if (!IsValid()) {
         return NbUserEntity();
     }
     return session_user_entity_; 
