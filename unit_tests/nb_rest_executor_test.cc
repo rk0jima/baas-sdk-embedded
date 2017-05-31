@@ -359,11 +359,18 @@ TEST(NbRestExecutor, ExecuteRequestLibcurlRuntimeError400) {
     EXPECT_EQ(executor.response_body_, result.GetRestError().reason);
 }
 
-//NbRestExecutor::ExecuteRequest(curlpp::LibcurlRuntimeError:レスポンスあり(200 OK))
-TEST(NbRestExecutor, ExecuteRequestLibcurlRuntimeError200) {
+//NbRestExecutor::ExecuteRequest(curlpp::LibcurlRuntimeError:レスポンスあり(100 Continue))
+TEST(NbRestExecutor, ExecuteRequestLibcurlRuntimeError100) {
     NbRestExecutorTest executor;
     executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_RUNTIME;
     executor.with_response_ = true;
+
+    //ヘッダ情報上書き
+    executor.response_headers_ = {
+        "HTTP/1.1 100 Continue\r\n",
+        "Content-Type: application/json\r\n",
+        "Content-Length: 20\r\n",
+        "\r\n"};
 
     NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
 
@@ -371,6 +378,51 @@ TEST(NbRestExecutor, ExecuteRequestLibcurlRuntimeError200) {
 
     EXPECT_TRUE(result.IsFatalError());
     EXPECT_EQ(NbResultCode::NB_ERROR_CURL_RUNTIME, result.GetResultCode());
+}
+
+//NbRestExecutor::ExecuteRequest(curlpp::LibcurlRuntimeError:レスポンスあり(299 OK))
+TEST(NbRestExecutor, ExecuteRequestLibcurlRuntimeError299) {
+    NbRestExecutorTest executor;
+    executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_RUNTIME;
+    executor.with_response_ = true;
+
+    //ヘッダ情報上書き
+    executor.response_headers_ = {
+        "HTTP/1.1 299 OK\r\n",
+        "Content-Type: application/json\r\n",
+        "Content-Length: 20\r\n",
+        "\r\n"};
+
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+
+    NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
+
+    EXPECT_TRUE(result.IsFatalError());
+    EXPECT_EQ(NbResultCode::NB_ERROR_CURL_RUNTIME, result.GetResultCode());
+}
+
+//NbRestExecutor::ExecuteRequest(curlpp::LibcurlRuntimeError:レスポンスあり(300 Multiple Choices))
+TEST(NbRestExecutor, ExecuteRequestLibcurlRuntimeError300) {
+    NbRestExecutorTest executor;
+    executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_RUNTIME;
+    executor.with_response_ = true;
+
+    //ヘッダ情報上書き
+    executor.response_headers_ = {
+        "HTTP/1.1 300 Multiple Choices\r\n",
+        "Content-Type: application/json\r\n",
+        "Content-Length: 20\r\n",
+        "\r\n"};
+
+    executor.response_body_ = (char *)"{\"error\":\"File size over\"}";
+
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+
+    NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
+
+    EXPECT_TRUE(result.IsRestError());
+    EXPECT_EQ(300, result.GetRestError().status_code);
+    EXPECT_EQ(executor.response_body_, result.GetRestError().reason);
 }
 
 //NbRestExecutor::ExecuteRequest(curlpp::LibcurlLogicError)
@@ -534,11 +586,18 @@ TEST(NbRestExecutor, ExecuteFileUploadLibcurlRuntimeError400) {
     EXPECT_EQ(executor.response_body_, result.GetRestError().reason);
 }
 
-//NbRestExecutor::ExecuteFileUpload(curlpp::LibcurlRuntimeError:レスポンスあり(200 OK))
-TEST(NbRestExecutor, ExecuteFileUploadLibcurlRuntimeError200) {
+//NbRestExecutor::ExecuteFileUpload(curlpp::LibcurlRuntimeError:レスポンスあり(100 Continue))
+TEST(NbRestExecutor, ExecuteFileUploadLibcurlRuntimeError100) {
     NbRestExecutorTest executor;
     executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_RUNTIME;
     executor.with_response_ = true;
+
+    //ヘッダ情報上書き
+    executor.response_headers_ = {
+        "HTTP/1.1 100 Continue\r\n",
+        "Content-Type: application/json\r\n",
+        "Content-Length: 20\r\n",
+        "\r\n"};
 
     NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty);
 
@@ -546,6 +605,52 @@ TEST(NbRestExecutor, ExecuteFileUploadLibcurlRuntimeError200) {
 
     EXPECT_TRUE(result.IsFatalError());
     EXPECT_EQ(NbResultCode::NB_ERROR_CURL_RUNTIME, result.GetResultCode());
+}
+
+
+//NbRestExecutor::ExecuteFileUpload(curlpp::LibcurlRuntimeError:レスポンスあり(299 OK))
+TEST(NbRestExecutor, ExecuteFileUploadLibcurlRuntimeError299) {
+    NbRestExecutorTest executor;
+    executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_RUNTIME;
+    executor.with_response_ = true;
+
+    //ヘッダ情報上書き
+    executor.response_headers_ = {
+        "HTTP/1.1 299 OK\r\n",
+        "Content-Type: application/json\r\n",
+        "Content-Length: 20\r\n",
+        "\r\n"};
+
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty);
+
+    NbResult<NbHttpResponse> result = executor.ExecuteFileUpload(request, MakeFilePath("upload.dat"));
+
+    EXPECT_TRUE(result.IsFatalError());
+    EXPECT_EQ(NbResultCode::NB_ERROR_CURL_RUNTIME, result.GetResultCode());
+}
+
+//NbRestExecutor::ExecuteFileUpload(curlpp::LibcurlRuntimeError:レスポンスあり(300 Multiple Choices))
+TEST(NbRestExecutor, ExecuteFileUploadLibcurlRuntimeError300) {
+    NbRestExecutorTest executor;
+    executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_RUNTIME;
+    executor.with_response_ = true;
+
+    //ヘッダ情報上書き
+    executor.response_headers_ = {
+        "HTTP/1.1 300 Multiple Choices\r\n",
+        "Content-Type: application/json\r\n",
+        "Content-Length: 20\r\n",
+        "\r\n"};
+
+    executor.response_body_ = (char *)"{\"error\":\"File size over\"}";
+
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty);
+
+    NbResult<NbHttpResponse> result = executor.ExecuteFileUpload(request, MakeFilePath("upload.dat"));
+
+    EXPECT_TRUE(result.IsRestError());
+    EXPECT_EQ(300, result.GetRestError().status_code);
+    EXPECT_EQ(executor.response_body_, result.GetRestError().reason);
 }
 
 //NbRestExecutor::ExecuteFileUpload(curlpp::LibcurlLogicError)
@@ -718,11 +823,18 @@ TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadLibcurlRuntimeError400) {
     EXPECT_EQ(executor.response_body_, result.GetRestError().reason);
 }
 
-//NbRestExecutor::ExecuteFileDownload(curlpp::LibcurlRuntimeError:レスポンスあり(200 OK))
+//NbRestExecutor::ExecuteFileDownload(curlpp::LibcurlRuntimeError:レスポンスあり(100 Continue))
 TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadLibcurlRuntimeError200) {
     NbRestExecutorTest executor;
     executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_RUNTIME;
     executor.with_response_ = true;
+
+    //ヘッダ情報上書き
+    executor.response_headers_ = {
+        "HTTP/1.1 100 Continue\r\n",
+        "Content-Type: application/json\r\n",
+        "Content-Length: 20\r\n",
+        "\r\n"};
 
     NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
 
@@ -730,6 +842,51 @@ TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadLibcurlRuntimeError200) {
 
     EXPECT_TRUE(result.IsFatalError());
     EXPECT_EQ(NbResultCode::NB_ERROR_CURL_RUNTIME, result.GetResultCode());
+}
+
+//NbRestExecutor::ExecuteFileDownload(curlpp::LibcurlRuntimeError:レスポンスあり(299 OK))
+TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadLibcurlRuntimeError299) {
+    NbRestExecutorTest executor;
+    executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_RUNTIME;
+    executor.with_response_ = true;
+
+    //ヘッダ情報上書き
+    executor.response_headers_ = {
+        "HTTP/1.1 299 OK\r\n",
+        "Content-Type: application/json\r\n",
+        "Content-Length: 20\r\n",
+        "\r\n"};
+
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+
+    NbResult<NbHttpResponse> result = executor.ExecuteFileDownload(request, string("download.dat"));
+
+    EXPECT_TRUE(result.IsFatalError());
+    EXPECT_EQ(NbResultCode::NB_ERROR_CURL_RUNTIME, result.GetResultCode());
+}
+
+//NbRestExecutor::ExecuteFileDownload(curlpp::LibcurlRuntimeError:レスポンスあり(300 Multiple Choices))
+TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadLibcurlRuntimeError300) {
+    NbRestExecutorTest executor;
+    executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_RUNTIME;
+    executor.with_response_ = true;
+
+    //ヘッダ情報上書き
+    executor.response_headers_ = {
+        "HTTP/1.1 300 Multiple Choices\r\n",
+        "Content-Type: application/json\r\n",
+        "Content-Length: 20\r\n",
+        "\r\n"};
+
+    executor.response_body_ = (char *)"{\"error\":\"File size over\"}";
+
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+
+    NbResult<NbHttpResponse> result = executor.ExecuteFileDownload(request, string("download.dat"));
+
+    EXPECT_TRUE(result.IsRestError());
+    EXPECT_EQ(300, result.GetRestError().status_code);
+    EXPECT_EQ(executor.response_body_, result.GetRestError().reason);
 }
 
 //NbRestExecutor::ExecuteFileDownload(curlpp::LibcurlLogicError)
