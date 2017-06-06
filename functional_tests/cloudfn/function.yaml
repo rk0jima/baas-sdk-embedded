@@ -1,9 +1,0 @@
-echoBack:
-  code:
-    bucket: CUSTOM_CODE
-    file: embeddedSdkTest-1.0.0.tgz
-  handler: echoBack
-  env:
-    spec: node6
-    timeout: 600
-    memorySize: 128

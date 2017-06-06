@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.1)
 project(embeddedsdk)
 
 option(IA32 "Build for IA-32 architectures" OFF)
+option(ARM_TEST "Build for testing on the ARM architectures" OFF)
 option(UNIT_TESTS "Compile unit tests" OFF)
 option(FUNCTIONAL_TESTS "Compile functional tests" OFF)
 

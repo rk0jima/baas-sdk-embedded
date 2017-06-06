@@ -1,9 +1,0 @@
-tenant: 58980feb2909b20f69a18463
-appId: 589810262909b20f69a18467
-masterKey: mfUeyIvWYRFm4DXyNwpRLd31WUnwtVOtWDc9XXvu
-systemKey:
-baseUri: http://10.27.163.25:8080/api
-debugMode: debug
-proxy:
-  host: null
-  port: 0
