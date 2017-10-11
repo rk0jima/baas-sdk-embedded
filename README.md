@@ -12,7 +12,12 @@ RaspberryPi向けのクロスコンパイル手順は、cross/raspberrypi/README
 * glibc-devel.i686(Intel 32bit)
 * libcurl-devel.i686(Intel 32bit)
 
+
     $ sudo yum install libcurl-devel
+
+cmake3, gcc-c++ もインストール
+
+    $ sudo yum install cmake3 gcc-c++
 
 ビルド手順
 ----------
@@ -49,16 +54,21 @@ Unitテスト
 
 テストコマンドを直接実行してもよい。
 
-    $ ctest
+    $ ctest3
 もしくは
 
     $ unit_tests/unit_test
+
+以下でxml形式で出力可 (for jenkins)
+
+    $ ctest3 -T Test
 
 Functionテスト
 --------------
 事前準備としてテスト用テナントを２つ作成し、functional_tests/ft_data.cc にテナント情報を記載する。
 
-ビルド実施後、他の機器に実行ファイルを転送して実施する場合は、kFileDir に試験コマンドを実行するディレクトを記載する。相対パスでも可。（例）試験コマンドに移動して実行する場合：kFileDir = "./"  
+ビルド実施後、他の機器に実行ファイルを転送して実施する場合は、kFileDir に試験コマンドを実行するディレクトを記載する。相対パスでも可。  
+（例）試験コマンドに移動して実行する場合：kFileDir = "./"  
 また、試験コマンドを実行するディレクトリに試験用ファイルをディレクトリごと転送する（functional_tests/files）
 
 試験コマンド実行方法
@@ -104,4 +114,3 @@ Doxygen
 HTML作成(doxygen 1.8.12で動作確認済)
 
     $ doxygen [doxyfile]
-
