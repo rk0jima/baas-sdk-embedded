@@ -59,9 +59,9 @@ Unitテスト
 
     $ unit_tests/unit_test
 
-以下でxml形式で出力可 (for jenkins)
+以下でJUnit形式で出力 (for jenkins)
 
-    $ ctest3 -T Test
+    $ ./unit_tests/unit_test --gtest_output=xml:ut_result.xml
 
 Functionテスト
 --------------
@@ -92,6 +92,10 @@ Functionテスト
 例）オブジェクトストレージのテストで時間がかかるテストはスキップ
 
     $ ./functional_tests/functional_test --gtest_filter=NbObjectFT.*:-*SlowTest
+
+例）テスト結果をJUnit形式で出力 (for jenkins)
+
+    $ ./functional_tests/functional_test --gtest_filter=-*Manual* --gtest_output=xml:ft_result.xml
 
 Coverage
 --------
