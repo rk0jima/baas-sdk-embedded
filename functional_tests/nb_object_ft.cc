@@ -1020,7 +1020,7 @@ TEST_F(NbObjectFT, QueryWhereOptionGt) {
     int count;
 
     query.GreaterThan("data1", 120)
-         .OrderBy(std::vector<std::string>{"data1"});
+         .OrderBy(std::vector<std::string>{"_id"});
     NbResult<std::vector<NbObject>> result = object_bucket.Query(query, &count);
 
     // 戻り値確認
@@ -1046,7 +1046,7 @@ TEST_F(NbObjectFT, QueryWhereOptionGte) {
     int count;
 
     query.GreaterThanOrEqual("data1", 120)
-         .OrderBy(std::vector<std::string>{"data1"});
+         .OrderBy(std::vector<std::string>{"_id"});
     NbResult<std::vector<NbObject>> result = object_bucket.Query(query, &count);
 
     // 戻り値確認
@@ -1268,7 +1268,7 @@ TEST_F(NbObjectFT, QueryWhereOptionAnd) {
 
     // 追加確認（条件未設定のQueryにAND条件を設定）
     NbQuery query = NbQuery().And(std::vector<NbQuery>{query2})
-                             .OrderBy(std::vector<std::string>{"data1"});
+                             .OrderBy(std::vector<std::string>{"_id"});
     result = object_bucket.Query(query, &count);
     ASSERT_TRUE(result.IsSuccess());
     response = result.GetSuccessData();
@@ -1374,7 +1374,7 @@ TEST_F(NbObjectFT, QueryWhereOptionRegexE) {
     NbQuery query;
     int count;
 
-    query.Regex("data1", ".*5._  # comment", "x");
+    query.Regex("data1", ".*5._  # comment\n", "x");
 
     NbResult<std::vector<NbObject>> result = object_bucket.Query(query, &count);
 
@@ -2218,20 +2218,23 @@ TEST_F(NbObjectFT, PartUpdateObjectPull) {
     EXPECT_EQ(R"(["vme","de","tsc","pse"])", response.GetJsonArray("Key1").ToJsonString());
 }
 
-// オブジェクトの更新（部分更新）.$pushAll
-TEST_F(NbObjectFT, PartUpdateObjectPushAll) {
+// オブジェクトの更新（部分更新）.$push + $each
+TEST_F(NbObjectFT, PartUpdateObjectPushEach) {
     NbObjectBucket object_bucket(service_, kObjectBucketName);
     NbObject object = object_bucket.NewObject();
     NbJsonArray jsonArrayValue(R"([90, 91])");
     object.PutJsonArray("Key1", jsonArrayValue);
     object.Save();
 
-    NbJsonObject json1;
+    NbJsonObject each;
     NbJsonArray jsonArrayValue2(R"([88,89])");
-    json1.PutJsonArray("Key1", jsonArrayValue2);
+    each.PutJsonArray("$each", jsonArrayValue2);
+
+    NbJsonObject json1;
+    json1.PutJsonObject("Key1", each);
 
     NbJsonObject json2;
-    json2.PutJsonObject("$pushAll", json1);
+    json2.PutJsonObject("$push", json1);
 
     NbResult<NbObject> result = object.PartUpdateObject(json2);
 
