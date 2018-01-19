@@ -2429,7 +2429,7 @@ TEST_F(NbObjectFT, PartUpdateObjectInvalid) {
     EXPECT_TRUE(result.IsRestError());
 
     NbRestError rest_error = result.GetRestError();
-    EXPECT_EQ(500, result.GetRestError().status_code);
+    EXPECT_EQ(400, result.GetRestError().status_code);
     NbJsonObject json(rest_error.reason);
     EXPECT_TRUE(json.IsMember("error"));
 }
