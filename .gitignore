@@ -2,3 +2,5 @@ cmake-build-debug/
 
 doc/html/
 include/necbaas/internal/easylogging++.h
+/build/
+
