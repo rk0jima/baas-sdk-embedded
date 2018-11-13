@@ -143,7 +143,7 @@ NbResult<NbObject> NbObject::Save(bool acl) {
     NbResult<NbHttpResponse> rest_result = service_->ExecuteRequest(
         [this, &json, acl](NbHttpRequestFactory &request_factory) -> NbHttpRequest {
             if (object_id_.empty()) { //新規
-                if (acl) {
+                if (!noAcl_ && acl) {
                     json.PutJsonObject(kKeyAcl, acl_.ToJsonObject());
                 }
 
@@ -152,7 +152,9 @@ NbResult<NbObject> NbObject::Save(bool acl) {
                                .AppendHeader(kHeaderContentType, kHeaderContentTypeJson)
                                .Body(json.ToJsonString());
             } else { //更新
-                json.PutJsonObject(kKeyAcl, acl_.ToJsonObject());
+                if(!noAcl_) {
+                    json.PutJsonObject(kKeyAcl, acl_.ToJsonObject());
+                }
                 if (!created_time_.empty()) {
                     json[kKeyCreatedAt] = created_time_;
                 }
@@ -170,6 +172,7 @@ NbResult<NbObject> NbObject::Save(bool acl) {
             }
             return request_factory.Build();
         }, timeout_);
+
 
     result.SetResultCode(rest_result.GetResultCode());
 
@@ -286,6 +289,14 @@ const NbAcl &NbObject::GetAcl() const {
 
 void NbObject::SetAcl(const NbAcl &acl) {
     acl_ = acl;
+}
+
+void NbObject::SetNoAcl(bool noAcl) {
+    noAcl_ = noAcl;
+}
+
+bool NbObject::IsNoAcl() const {
+    return noAcl_;
 }
 
 bool NbObject::IsDeleteMark() const {

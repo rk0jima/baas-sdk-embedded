@@ -77,10 +77,22 @@ class NbObject : public NbJsonObject {
      * 作成用のJsonオブジェクトに予約名（_id, createdAt, updatedAt, ACL, etag,
      * _deleted）が使用されている場合は削除する。<br>
      * aclがtrueの場合、インスタンスに設定されているデータを使用する。<br>
+     * ただし、noAcl_をtrueに設定した場合はACLを設定せずに保存する。本設定はACLレスバケットに対してのみ使用すること。<br>
+     * また以下の点に留意すること。<br>
+     * <ul>
+     *   <li>ACL設定・未設定の切り替えは推奨しない。</li>
+     *   <li>オブジェクト保存後、サーバ上のオブジェクトにACLは設定されないが、本SDKでは権限未設定のACLが代替として設定される。</li>
+     * </ul>
      * <br><b>完全上書きの場合</b><br>
      * 作成用のJsonオブジェクトに予約名（_id, createdAt, updatedAt, ACL, etag,
      * _deleted）が使用されている場合は削除する。<br>
      * aclはフラグに関係なく、インスタンスに設定されているデータを使用して更新する。<br>
+     * ただし、noAcl_をtrueに設定した場合はACLを設定せずに更新する。本設定はACLレスバケットに対してのみ使用すること。<br>
+     * また以下の点に留意すること。<br>
+     * <ul>
+     *   <li>ACL設定・未設定の切り替えは推奨しない。</li>
+     *   <li>オブジェクト更新後、サーバ上のオブジェクトにACLは設定されないが、本SDKでは権限未設定のACLが代替として設定される。</li>
+     * </ul>
      * createdAtは、自インスタンスに設定されているデータを使用して更新する。空文字の場合は更新しない。<br>
      * インスタンスにETagが設定されている場合、ETagがリクエストパラメータに設定される。
      * @param[in]   acl         ACL更新フラグ
@@ -166,6 +178,20 @@ class NbObject : public NbJsonObject {
     void SetAcl(const NbAcl &acl);
 
     /**
+     * オブジェクトACLレス設定.
+     * @param[in]   noAcl      bool
+     */
+    void SetNoAcl(bool noAcl);
+
+    /**
+     * オブジェクトACLレス設定確認.
+     * @return          ACLレス設定
+     * @retval  true    ACL不使用
+     * @retval  false   ACL使用
+     */
+    bool IsNoAcl() const;
+
+    /**
      * 削除マーク付与確認.
      * @return          削除マーク
      * @retval  true    削除マークあり
@@ -186,7 +212,7 @@ class NbObject : public NbJsonObject {
      * @internal
      * <p>全データ設定.</p>
      * 予約名を含めたJsonオブジェクトを設定する。REST結果からJsonオブジェクトを作成する際に使用される。
-     * @return      ACL
+     * @param[in]   json      Jsonオブジェクト
      */
     void SetCurrentParam(const NbJsonObject &json);
 
@@ -200,6 +226,7 @@ class NbObject : public NbJsonObject {
     std::string etag_{};                 /*!< ETag                   */
     NbAcl acl_{};                        /*!< ACL                    */
     bool deleted_{false};                /*!< 削除マーク             */
+    bool noAcl_{false};                  /*!< ACLレスフラグ          */
 
     /**
      * 予約名フィールド削除.

@@ -638,6 +638,7 @@ TEST_F(NbObjectTest, SaveNew2) {
     object.SetCurrentParam(NbJsonObject(kDefaultObject));
     object.SetObjectId(kEmpty);
     object.SetAcl(NbAcl::CreateAclForAnonymous());
+    object.SetNoAcl(false);
     object["_id"] = "id";
     NbResult<NbObject> result = object.Save(true);
 
@@ -650,6 +651,76 @@ TEST_F(NbObjectTest, SaveNew2) {
     EXPECT_EQ(123, object.GetInt("intKey"));
     EXPECT_EQ("stringValue", object.GetString("stringKey"));
     EXPECT_EQ("521c36d4ac521e1ffa000007", object.GetObjectId());
+}
+
+static NbResult<NbHttpResponse> SaveNew3(const NbHttpRequest &request, int timeout) {
+    EXPECT_EQ(string("/objects/" + kBucketName),
+              request.GetUrl().substr(request.GetUrl().find("/objects/")));
+    EXPECT_EQ(NbHttpRequestMethod::HTTP_REQUEST_TYPE_POST, request.GetMethod());
+    EXPECT_EQ(4, request.GetHeaders().size());
+    int check_header = 0;
+    for (auto header : request.GetHeaders()) {
+        if (header.find("Content-Type: application/json") != std::string::npos) {
+            ++check_header;
+            continue;
+        }
+    }
+    EXPECT_EQ(1, check_header);
+    NbJsonObject req_json(kSaveNew);
+    // No ACL
+    // req_json.PutJsonObject("ACL", NbAcl::CreateAclForAnonymous().ToJsonObject());
+    EXPECT_EQ(req_json.ToJsonString(), request.GetBody());
+    EXPECT_EQ(10, timeout);
+
+    NbResult<NbHttpResponse> tmp_result(NbResultCode::NB_OK);
+    NbJsonObject resp_json(kDefaultObject);
+    // remove ACL from the response
+    resp_json.Remove("ACL");
+    string body_str = resp_json.ToJsonString();
+    std::vector<char> body(body_str.length());
+    std::copy(body_str.c_str(), body_str.c_str() + body_str.length(), body.begin());
+    NbHttpResponse response(200, string("OK"), std::multimap<std::string, std::string>(), body);
+    tmp_result.SetSuccessData(response);
+    return tmp_result;
+}
+
+//NbObject::Save(新規、ACLあり、NoACL設定)
+TEST_F(NbObjectTest, SaveNew3) {
+    SetExpect(&executor_, &SaveNew3);
+
+    shared_ptr<NbService> service(mock_service_);
+
+    NbObject object(service, kBucketName);
+    object.SetTimeout(10);
+    EXPECT_EQ(10, object.GetTimeout());
+    object.SetCurrentParam(NbJsonObject(kDefaultObject));
+    object.SetObjectId(kEmpty);
+    // 期待しないダミーのACLを格納、ACL未設定となることを期待
+    object.SetAcl(NbAcl::CreateAclForAnonymous());
+    object.SetNoAcl(true);
+    NbResult<NbObject> result = object.Save(true);
+
+    // 戻り値確認
+    EXPECT_TRUE(result.IsSuccess());
+    NbObject response = result.GetSuccessData();
+    EXPECT_EQ(123, response.GetInt("intKey"));
+    EXPECT_EQ("stringValue", response.GetString("stringKey"));
+    EXPECT_EQ("521c36d4ac521e1ffa000007", response.GetObjectId());
+    EXPECT_EQ(123, object.GetInt("intKey"));
+    EXPECT_EQ("stringValue", object.GetString("stringKey"));
+    EXPECT_EQ("521c36d4ac521e1ffa000007", object.GetObjectId());
+    // ACL無しのレスポンス受信
+    // 空のACLを期待
+    NbAcl acl = object.GetAcl();
+    EXPECT_TRUE(acl.GetAdmin().empty());
+    EXPECT_TRUE(acl.GetCreate().empty());
+    EXPECT_TRUE(acl.GetDelete().empty());
+    EXPECT_TRUE(acl.GetRead().empty());
+    EXPECT_TRUE(acl.GetUpdate().empty());
+    EXPECT_TRUE(acl.GetWrite().empty());
+    EXPECT_EQ("", acl.GetOwner());
+    // ACLレス設定が有効であること
+    EXPECT_TRUE( object.IsNoAcl());
 }
 
 static NbResult<NbHttpResponse> SaveUpdate1(const NbHttpRequest &request, int timeout) {
@@ -757,6 +828,77 @@ TEST_F(NbObjectTest, SaveUpdate2) {
     EXPECT_EQ(123, object.GetInt("intKey"));
     EXPECT_EQ("stringValue", object.GetString("stringKey"));
     EXPECT_EQ("521c36d4ac521e1ffa000007", object.GetObjectId());
+}
+
+static NbResult<NbHttpResponse> SaveUpdate3(const NbHttpRequest &request, int timeout) {
+    EXPECT_EQ(string("/objects/" + kBucketName + "/" + "521c36d4ac521e1ffa000007" + "?etag=8c92c97e-01a7-11e4-9598-53792c688d1b"),
+              request.GetUrl().substr(request.GetUrl().find("/objects/")));
+    EXPECT_EQ(NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, request.GetMethod());
+    EXPECT_EQ(4, request.GetHeaders().size());
+    int check_header = 0;
+    for (auto header : request.GetHeaders()) {
+        if (header.find("Content-Type: application/json") != std::string::npos) {
+            ++check_header;
+            continue;
+        }
+    }
+    EXPECT_EQ(1, check_header);
+
+    NbJsonObject req_json;
+    NbJsonObject data_json(kSaveNew);
+    data_json["createdAt"] = "2013-08-27T05:19:16.000Z";
+    req_json.PutJsonObject("$full_update", data_json);
+    std::cout << "[REQ_BODY] " << request.GetBody() << std::endl;
+    EXPECT_EQ(req_json.ToJsonString(), request.GetBody());
+    EXPECT_EQ(60, timeout);
+
+    NbResult<NbHttpResponse> tmp_result(NbResultCode::NB_OK);
+    NbJsonObject resp_json(kDefaultObject);
+    // Remove ACL to simulate "no ACL response"
+    std::cout << "[RESP_ORIGIN] " << resp_json.ToJsonString() << std::endl;
+    resp_json.Remove("ACL");
+    std::cout << "[RESP_RM_ACL] " << resp_json.ToJsonString() << std::endl;
+    string body_str = resp_json.ToJsonString();
+    std::vector<char> body(body_str.length());
+    std::copy(body_str.c_str(), body_str.c_str() + body_str.length(), body.begin());
+    NbHttpResponse response(200, string("OK"), std::multimap<std::string, std::string>(), body);
+    tmp_result.SetSuccessData(response);
+    return tmp_result;
+}
+
+//NbObject::Save(更新、作成日時あり、Etagあり、NoACL有効)
+TEST_F(NbObjectTest, SaveUpdate3) {
+    SetExpect(&executor_, &SaveUpdate3);
+
+    shared_ptr<NbService> service(mock_service_);
+
+    NbObject object(service, kBucketName);
+    object.SetCurrentParam(NbJsonObject(kDefaultObject));
+    object["_id"] = "id";
+    object.SetNoAcl(true);
+    NbResult<NbObject> result = object.Save();
+
+    // 戻り値確認
+    EXPECT_TRUE(result.IsSuccess());
+    NbObject response = result.GetSuccessData();
+    EXPECT_EQ(123, response.GetInt("intKey"));
+    EXPECT_EQ("stringValue", response.GetString("stringKey"));
+    EXPECT_EQ("521c36d4ac521e1ffa000007", response.GetObjectId());
+    EXPECT_EQ(123, object.GetInt("intKey"));
+    EXPECT_EQ("stringValue", object.GetString("stringKey"));
+    EXPECT_EQ("521c36d4ac521e1ffa000007", object.GetObjectId());
+    // ACL無しのレスポンス受信
+    // 空のACLを期待
+    NbAcl acl = object.GetAcl();
+    EXPECT_TRUE(acl.GetAdmin().empty());
+    EXPECT_TRUE(acl.GetCreate().empty());
+    EXPECT_TRUE(acl.GetDelete().empty());
+    EXPECT_TRUE(acl.GetRead().empty());
+    EXPECT_TRUE(acl.GetUpdate().empty());
+    EXPECT_TRUE(acl.GetWrite().empty());
+    EXPECT_EQ("", acl.GetOwner());
+    // ACLレス設定が有効であること
+    EXPECT_TRUE(object.IsNoAcl());
 }
 
 static NbResult<NbHttpResponse> SaveRestError(const NbHttpRequest &request, int timeout) {
