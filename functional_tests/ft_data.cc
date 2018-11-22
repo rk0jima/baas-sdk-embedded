@@ -51,6 +51,7 @@ const std::string kSubpath = "/echoBack";
 
 // オブジェクトバケット
 const std::string kObjectBucketName = "objectBucket";
+const std::string kNoAclObjectBucketName = "noAclObjectBucket";
 
 // 空文字
 const std::string kEmpty = "";

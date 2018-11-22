@@ -57,6 +57,7 @@ extern const std::string kSubpath;
 
 // オブジェクトバケット
 extern const std::string kObjectBucketName;
+extern const std::string kNoAclObjectBucketName;
 
 // 空文字
 extern const std::string kEmpty;

@@ -26,9 +26,11 @@ void InitDefaultBucket() {
     CreateBucket(master_service_b, "file", "fileBucket");
     DeleteAllFile();
     DeleteAllFile(master_service_b);
-    CreateBucket("object", "objectBucket");
-    CreateBucket(master_service_b, "object", "objectBucket");
+    CreateBucket("object", kObjectBucketName);
+    CreateBucket(master_service, "object", kNoAclObjectBucketName, "", "", true);
+    CreateBucket(master_service_b, "object", kObjectBucketName);
     DeleteAllObject();
+    DeleteAllObject(master_service, kNoAclObjectBucketName);
     DeleteAllObject(master_service_b);
 }
 
@@ -118,7 +120,7 @@ void CreateBucket(const string &bucket_type, const string &bucket_name, string a
     CreateBucket(master_service, bucket_type, bucket_name, acl, content_acl);
 }
 
-void CreateBucket(shared_ptr<NbService> service, const string &bucket_type, const string &bucket_name, string acl, string content_acl) {
+void CreateBucket(shared_ptr<NbService> service, const string &bucket_type, const string &bucket_name, string acl, string content_acl, bool noAcl) {
     NbJsonObject body;
     body["description"] = "description";
     if (acl.empty()) {
@@ -129,6 +131,7 @@ void CreateBucket(shared_ptr<NbService> service, const string &bucket_type, cons
         content_acl = R"({"r":["g:anonymous"],"w":["g:anonymous"],"c":[],"u":[],"d":[]})";
     }
     body.PutJsonObject("contentACL", NbJsonObject(content_acl));
+    body["noAcl"] = noAcl;
 
     NbResult<NbHttpResponse> rest_result = service->ExecuteRequest(
         [&](NbHttpRequestFactory &factory) -> NbHttpRequest {
@@ -147,10 +150,14 @@ void DeleteAllObject() {
 }
 
 void DeleteAllObject(shared_ptr<NbService> service) {
+    DeleteAllObject(service, kObjectBucketName);
+}
+
+void DeleteAllObject(std::shared_ptr<NbService> service, const std::string &bucketName) {
     NbResult<NbHttpResponse> rest_result = service->ExecuteRequest(
-        [](NbHttpRequestFactory &factory) -> NbHttpRequest {
+        [bucketName](NbHttpRequestFactory &factory) -> NbHttpRequest {
             return factory.Delete("/objects")
-                          .AppendPath("/" + kObjectBucketName)
+                          .AppendPath("/" + bucketName)
                           .Build();
         }, 60);
     EXPECT_TRUE(rest_result.IsSuccess());
@@ -183,7 +190,7 @@ void PublishFile(const string &bucket_name, const string &file_name) {
 
 // ファイルパスの作成
 string MakeFilePath(const string &file_name) {
-    // ビルド環境のfunctinal_test/filesをデフォルトとする
+    // ビルド環境のfunctional_test/filesをデフォルトとする
     // kFileDir が設定されていれば kFileDir + "files/" を使用
     string file_path;
 

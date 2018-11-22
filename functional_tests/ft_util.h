@@ -24,11 +24,12 @@ void CreateDefaultUser(std::shared_ptr<NbService> service);
 void CreateBucket(const std::string &bucket_type, const std::string &bucket_name,
                   std::string acl = "", std::string content_acl = "");
 void CreateBucket(std::shared_ptr<NbService> service, const std::string &bucket_type, const std::string &bucket_name,
-                  std::string acl = "", std::string content_acl = "");
+                  std::string acl = "", std::string content_acl = "", bool noAcl = false);
 
 // 全オブジェクト削除
 void DeleteAllObject();
 void DeleteAllObject(std::shared_ptr<NbService> service);
+void DeleteAllObject(std::shared_ptr<NbService> service, const std::string &bucketName);
 
 // テストバケットの全ファイルを削除する
 void DeleteAllFile();

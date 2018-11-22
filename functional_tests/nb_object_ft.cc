@@ -228,6 +228,44 @@ TEST_F(NbObjectFT, SaveNewNotLoggedInAcl) {
     FTUtil::CompareObject(object, response);
 }
 
+// オブジェクト作成.新規作成.更新
+// ACLレスバケット
+TEST_F(NbObjectFT, SaveOnAclLessBucket) {
+
+    // 空のACLを期待
+    NbJsonObject json(R"({})");
+    NbAcl expected_acl(json);
+
+    NbObjectBucket object_bucket(service_, kNoAclObjectBucketName);
+    NbObject object = object_bucket.NewObject();
+    object.SetNoAcl(true);
+    object["testKey"] = "testValue";
+    NbResult<NbObject> result = object.Save();
+
+    // 戻り値確認
+    ASSERT_TRUE(result.IsSuccess());
+    NbObject response = result.GetSuccessData();
+
+    EXPECT_EQ(string("testValue"), response.GetString("testKey"));
+    EXPECT_FALSE(response.GetObjectId().empty());
+    EXPECT_NE(0, response.GetCreatedTime().tm_year);
+    EXPECT_NE(0, response.GetUpdatedTime().tm_year);
+    EXPECT_FALSE(response.GetETag().empty());
+    EXPECT_TRUE(response.IsNoAcl());
+    FTUtil::CompareAcl(expected_acl, response.GetAcl());
+    FTUtil::CompareObject(object, response);
+    std::string etag = response.GetETag();
+
+    // update
+    result = response.Save();
+    ASSERT_TRUE(result.IsSuccess());
+    response = result.GetSuccessData();
+
+    EXPECT_NE(etag, response.GetETag());
+    EXPECT_TRUE(response.IsNoAcl());
+    FTUtil::CompareAcl(expected_acl, response.GetAcl());
+}
+
 // オブジェクト作成.マスターキー
 // バケットcontentACLのcreate権限を空欄、AppKeyにマスターキーを設定
 TEST_F(NbObjectFT, SaveNewMaster) {
