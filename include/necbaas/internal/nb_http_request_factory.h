@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 NEC Corporation
+ * Copyright (C) 2017-2019 NEC Corporation
  */
 
 #ifndef NECBAAS_NBHTTPREQUESTFACTORY_H
@@ -9,6 +9,7 @@
 #include <map>
 #include "necbaas/nb_http_request_method.h"
 #include "necbaas/internal/nb_http_request.h"
+#include "necbaas/nb_http_options.h"
 
 namespace necbaas {
 
@@ -35,7 +36,8 @@ class NbHttpRequestFactory {
      * @param[in]   sessnon_token       セッショントークン
      */
     NbHttpRequestFactory(const std::string &end_point_url, const std::string &tenant_id, const std::string &app_id,
-                         const std::string &app_key, const std::string &sessnon_token, const std::string &proxy);
+                         const std::string &app_key, const std::string &sessnon_token, const std::string &proxy,
+                         const NbHttpOptions &http_options);
 
     /**
      * デストラクタ.
@@ -147,6 +149,7 @@ class NbHttpRequestFactory {
     const std::string app_key_;                                 /*!< アプリケーションキー */
     const std::string session_token_;                           /*!< セッショントークン */
     const std::string proxy_;                                   /*!< Proxy */
+    const NbHttpOptions http_options_;                          /*!< HTTPオプション */
 
     NbHttpRequestMethod request_method_{NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET};
                                                                 /*!< HTTPメソッド */

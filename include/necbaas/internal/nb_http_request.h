@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 NEC Corporation
+ * Copyright (C) 2017-2019 NEC Corporation
  */
 
 #ifndef NECBAAS_NBHTTPREQUEST_H
@@ -9,6 +9,7 @@
 #include <list>
 #include "necbaas/nb_http_request_method.h"
 #include "necbaas/nb_result_code.h"
+#include "necbaas/nb_http_options.h"
 
 namespace necbaas {
 
@@ -30,7 +31,7 @@ class NbHttpRequest {
      */
     NbHttpRequest(const std::string &url, const NbHttpRequestMethod &method,
                   const std::list<std::string> &headers, const std::string &body,
-                  const std::string &proxy);
+                  const std::string &proxy, const NbHttpOptions &http_options);
 
     /**
      * デストラクタ.
@@ -68,6 +69,12 @@ class NbHttpRequest {
     const std::string &GetProxy() const;
 
     /**
+     * CURLオプション取得.
+     * @return      Curlオプション
+     */
+    std::list<std::shared_ptr<curlpp::OptionBase>> GetHttpOptions() const;
+
+    /**
      * ダンプ.
      * ログにHTTPリクエスト情報を出力する
      */
@@ -78,6 +85,7 @@ class NbHttpRequest {
     const std::list<std::string> headers_{};    /*!< HTTPヘッダリスト */
     const std::string body_{};                  /*!< HTTPボディ       */
     const std::string proxy_{};                 /*!< Proxy URL        */
+    const NbHttpOptions http_options_{};        /*!< HTTPオプション   */
 };
 } //namespace necbaas
 

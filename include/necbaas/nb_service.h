@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 NEC Corporation
+ * Copyright (C) 2017-2019 NEC Corporation
  */
 
 #ifndef NECBAAS_NBSERVICE_H
@@ -121,6 +121,12 @@ class NbService {
     void ClearSessionToken();
 
     /**
+     * HTTPアクセスのオプション設定.
+     * @param[in]   options    HTTPオプション
+     */
+    void SetHttpOptions(const NbHttpOptions &options);
+
+    /**
      * <b>[内部処理用]</b>
      * @internal
      * <p>REST実行(データの送受信).</p>
@@ -159,6 +165,7 @@ class NbService {
     std::string endpoint_url_;              /*!< Endpoint URI */
     std::string tenant_id_;                 /*!< テナントID */
     std::string proxy_;                     /*!< Proxy URL */
+    NbHttpOptions http_options_;            /*!< HTTPオプション */
     NbSessionToken session_token_;          /*!< セッショントークン */
     NbRestExecutorPool rest_executor_pool_; /*!< REST Executorプール */
     std::mutex session_token_mutex_;        /*!< セッショントークン更新用Mutex */

@@ -42,6 +42,7 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/nb_file_bucket_test.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/nb_object_test.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/nb_object_bucket_test.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/nb_http_options_test.cc
     )
 
 add_executable(unit_test ${TEST_FILES})

@@ -55,4 +55,25 @@ const std::string kNoAclObjectBucketName = "noAclObjectBucket";
 
 // 空文字
 const std::string kEmpty = "";
+
+namespace ssl {
+// SSL認証評価用エンドポイント
+// クライアント認証を設定したサーバ
+const std::string kEndPointUrl = "https://XX.XX.XX.XX/api";
+
+const std::string kTenantId = "";
+const std::string kAppId = "";
+const std::string kAppKey = "";
+const std::string kMasterKey = "";
+const std::string kProxy = "";
+
+// 認証に必要なファイルはあらかじめ files 配下に配置する
+const std::string kSslCertFile = "client_auth/cert.pem";
+const std::string kSslKeyFile = "client_auth/key.pem";
+// 以下でハッシュ化した名前をつける
+// openssl x509 -hash -noout -in cacert.pem
+const std::string kSslCaCertFile = "server_auth/XXXXXXX.0";
+const std::string kSslCaCertDir = "server_auth";
+}
+
 } //namespace necbaas

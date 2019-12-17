@@ -24,6 +24,7 @@ set(serial 6.2.0)
 set(soserial 6)
 
 set(LIB_SOURCE_FILES
+    src/nb_http_options.cc
     src/nb_http_response.cc
     src/nb_json_array.cc
     src/nb_json_object.cc

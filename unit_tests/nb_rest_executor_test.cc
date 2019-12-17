@@ -19,6 +19,9 @@ static const vector<string> kRespHeaders = {
 static const char kBody[] = "1234567890abcdefghij";
 static const string kProxy{"https://proxy.com/proxy:8080"};
 
+static const NbHttpOptions kEmptyOpts;
+static const NbHttpOptions kOpts = NbHttpOptions().SslCert("cert.pem");
+
 static string MakeFilePath(string file_name) {
     string file_path = __FILE__;
     file_path.erase(file_path.rfind("/") + 1);
@@ -166,11 +169,11 @@ static void CheckCurlOption(const NbRestExecutorTest &executor, const NbHttpRequ
     EXPECT_EQ(request.GetHeaders(), headers.getValue());
 }
 
-//NbRestExecutor::ExecuteRequest(GET, bodyなし、Proxyなし、タイムアウトデフォルト)
+//NbRestExecutor::ExecuteRequest(GET, bodyなし、Proxyなし、HTTPオプションなし、タイムアウトデフォルト)
 TEST(NbRestExecutor, ExecuteRequestGet) {
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -178,11 +181,11 @@ TEST(NbRestExecutor, ExecuteRequestGet) {
     CheckCurlOption(executor, request);
 }
 
-//NbRestExecutor::ExecuteRequest(GET, bodyあり、Proxyあり、タイムアウト0)
+//NbRestExecutor::ExecuteRequest(GET, bodyあり、Proxyあり、HTTPオプションあり、タイムアウト0)
 TEST(NbRestExecutor, ExecuteRequestGet2) {
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kBody, kProxy);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kBody, kProxy, kOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request, 0);
 
@@ -194,7 +197,7 @@ TEST(NbRestExecutor, ExecuteRequestGet2) {
 TEST(NbRestExecutor, ExecuteRequestPut1) {
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request, -1);
 
@@ -207,7 +210,7 @@ TEST(NbRestExecutor, ExecuteRequestPut2) {
     NbLogger::SetDebugLogEnabled(true);
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kBody, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kBody, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -220,7 +223,7 @@ TEST(NbRestExecutor, ExecuteRequestPost1) {
     NbLogger::SetDebugLogEnabled(false);
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_POST, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_POST, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -232,7 +235,7 @@ TEST(NbRestExecutor, ExecuteRequestPost1) {
 TEST(NbRestExecutor, ExecuteRequestPost2) {
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_POST, kReqHeaders, kBody, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_POST, kReqHeaders, kBody, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -244,7 +247,7 @@ TEST(NbRestExecutor, ExecuteRequestPost2) {
 TEST(NbRestExecutor, ExecuteRequestDelete1) {
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_DELETE, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_DELETE, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -256,7 +259,7 @@ TEST(NbRestExecutor, ExecuteRequestDelete1) {
 TEST(NbRestExecutor, ExecuteRequestDelete2) {
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_DELETE, kReqHeaders, kBody, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_DELETE, kReqHeaders, kBody, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -274,7 +277,7 @@ TEST(NbRestExecutor, ExecuteRequestStatuCodeNone) {
         "Content-Length: 20\r\n",
         "\r\n"};
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -293,7 +296,7 @@ TEST(NbRestExecutor, ExecuteRequestStatusCode299) {
         "Content-Length: 20\r\n",
         "\r\n"};
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -312,7 +315,7 @@ TEST(NbRestExecutor, ExecuteRequestStatusCode300) {
         "Content-Length: 20\r\n",
         "\r\n"};
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -327,7 +330,7 @@ TEST(NbRestExecutor, ExecuteRequestLibcurlRuntimeError) {
     NbRestExecutorTest executor;
     executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_RUNTIME;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -350,7 +353,7 @@ TEST(NbRestExecutor, ExecuteRequestLibcurlRuntimeError400) {
 
     executor.response_body_ = (char *)"{\"error\":\"File size over\"}";
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -372,7 +375,7 @@ TEST(NbRestExecutor, ExecuteRequestLibcurlRuntimeError100) {
         "Content-Length: 20\r\n",
         "\r\n"};
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -393,7 +396,7 @@ TEST(NbRestExecutor, ExecuteRequestLibcurlRuntimeError299) {
         "Content-Length: 20\r\n",
         "\r\n"};
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -416,7 +419,7 @@ TEST(NbRestExecutor, ExecuteRequestLibcurlRuntimeError300) {
 
     executor.response_body_ = (char *)"{\"error\":\"File size over\"}";
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -430,7 +433,7 @@ TEST(NbRestExecutor, ExecuteRequestLibcurlLogicError) {
     NbRestExecutorTest executor;
     executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_LOGIC;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -443,7 +446,7 @@ TEST(NbRestExecutor, ExecuteRequestException) {
     NbRestExecutorTest executor;
     executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_FATAL;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteRequest(request);
 
@@ -505,7 +508,7 @@ static void CheckCurlOptionUpload(const NbRestExecutorTest &executor, const NbHt
 TEST(NbRestExecutor, ExecuteFileUploadPut) {
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileUpload(request, MakeFilePath("upload.dat"));
 
@@ -517,7 +520,7 @@ TEST(NbRestExecutor, ExecuteFileUploadPut) {
 TEST(NbRestExecutor, ExecuteFileUploadPost) {
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_POST, kReqHeaders, kEmpty, kProxy);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_POST, kReqHeaders, kEmpty, kProxy, kOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileUpload(request, MakeFilePath("upload.dat"), 10);
 
@@ -529,7 +532,7 @@ TEST(NbRestExecutor, ExecuteFileUploadPost) {
 TEST(NbRestExecutor, ExecuteFileUploadGet) {
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileUpload(request, MakeFilePath("upload.dat"));
 
@@ -541,7 +544,7 @@ TEST(NbRestExecutor, ExecuteFileUploadGet) {
 TEST(NbRestExecutor, ExecuteFileUploadFileOpenError) {
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileUpload(request, kEmpty);
 
@@ -554,7 +557,7 @@ TEST(NbRestExecutor, ExecuteFileUploadLibcurlRuntimeError) {
     NbRestExecutorTest executor;
     executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_RUNTIME;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileUpload(request, MakeFilePath("upload.dat"));
 
@@ -577,7 +580,7 @@ TEST(NbRestExecutor, ExecuteFileUploadLibcurlRuntimeError400) {
 
     executor.response_body_ = (char *)"{\"error\":\"File size over\"}";
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileUpload(request, MakeFilePath("upload.dat"));
 
@@ -599,7 +602,7 @@ TEST(NbRestExecutor, ExecuteFileUploadLibcurlRuntimeError100) {
         "Content-Length: 20\r\n",
         "\r\n"};
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileUpload(request, MakeFilePath("upload.dat"));
 
@@ -621,7 +624,7 @@ TEST(NbRestExecutor, ExecuteFileUploadLibcurlRuntimeError299) {
         "Content-Length: 20\r\n",
         "\r\n"};
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileUpload(request, MakeFilePath("upload.dat"));
 
@@ -644,7 +647,7 @@ TEST(NbRestExecutor, ExecuteFileUploadLibcurlRuntimeError300) {
 
     executor.response_body_ = (char *)"{\"error\":\"File size over\"}";
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileUpload(request, MakeFilePath("upload.dat"));
 
@@ -658,7 +661,7 @@ TEST(NbRestExecutor, ExecuteFileUploadLibcurlLogicError) {
     NbRestExecutorTest executor;
     executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_LOGIC;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileUpload(request, MakeFilePath("upload.dat"));
 
@@ -671,7 +674,7 @@ TEST(NbRestExecutor, ExecuteFileUploadException) {
     NbRestExecutorTest executor;
     executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_FATAL;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileUpload(request, MakeFilePath("upload.dat"));
 
@@ -704,7 +707,7 @@ class NbRestExecutorDownloadTest : public ::testing::Test {
 TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownload) {
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileDownload(request, string("download.dat"));
 
@@ -716,7 +719,7 @@ TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownload) {
 TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownload2) {
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kProxy);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kProxy, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileDownload(request, string("download.dat"), 10);
 
@@ -728,7 +731,7 @@ TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownload2) {
 TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadInvalidMethod) {
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_PUT, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileDownload(request, string("download.dat"));
 
@@ -747,7 +750,7 @@ TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadXContentLengthNone) {
         "Content-Length: 20\r\n",
         "\r\n"};
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileDownload(request, string("download.dat"));
 
@@ -766,7 +769,7 @@ TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadLengthError) {
         "X-Content-Length: 30\r\n",
         "\r\n"};
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileDownload(request, string("download.dat"));
 
@@ -778,7 +781,7 @@ TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadLengthError) {
 TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadFileOpenError) {
     NbRestExecutorTest executor;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileDownload(request, kEmpty);
 
@@ -791,7 +794,7 @@ TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadLibcurlRuntimeError) {
     NbRestExecutorTest executor;
     executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_RUNTIME;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileDownload(request, string("download.dat"));
 
@@ -814,7 +817,7 @@ TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadLibcurlRuntimeError400) {
 
     executor.response_body_ = (char *)"{\"error\":\"File size over\"}";
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileDownload(request, string("download.dat"));
 
@@ -836,7 +839,7 @@ TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadLibcurlRuntimeError200) {
         "Content-Length: 20\r\n",
         "\r\n"};
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileDownload(request, string("download.dat"));
 
@@ -857,7 +860,7 @@ TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadLibcurlRuntimeError299) {
         "Content-Length: 20\r\n",
         "\r\n"};
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileDownload(request, string("download.dat"));
 
@@ -880,7 +883,7 @@ TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadLibcurlRuntimeError300) {
 
     executor.response_body_ = (char *)"{\"error\":\"File size over\"}";
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileDownload(request, string("download.dat"));
 
@@ -894,7 +897,7 @@ TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadLibcurlLogicError) {
     NbRestExecutorTest executor;
     executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_LOGIC;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileDownload(request, string("download.dat"));
 
@@ -907,7 +910,7 @@ TEST_F(NbRestExecutorDownloadTest, ExecuteFileDownloadException) {
     NbRestExecutorTest executor;
     executor.error_trigger_ = NbResultCode::NB_ERROR_CURL_FATAL;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, kReqHeaders, kEmpty, kEmpty, kEmptyOpts);
 
     NbResult<NbHttpResponse> result = executor.ExecuteFileDownload(request, string("download.dat"));
 

@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "necbaas/internal/nb_http_request.h"
 #include "necbaas/internal/nb_logger.h"
+#include <curlpp/Options.hpp>
 
 namespace necbaas {
 
@@ -18,8 +19,9 @@ TEST(NbHttpRequest, DumpDisable) {
     headers.push_back("X-HEADER-KEY2: 123456");
 
     string body{"message body"};
+    NbHttpOptions opts;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty, opts);
 
     NbLogger::SetRestLogEnabled(false);
 
@@ -27,6 +29,48 @@ TEST(NbHttpRequest, DumpDisable) {
     request.Dump();
     string out_string = testing::internal::GetCapturedStdout();
     EXPECT_EQ(kEmpty, out_string);
+}
+
+TEST(NbHttpRequest, GetHttpOptionsNone) {
+    std::list<string> headers;
+
+    string body{"message body"};
+    NbHttpOptions opts;
+
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty, opts);
+
+    std::list<std::shared_ptr<curlpp::OptionBase>> opt_list = request.GetHttpOptions();
+    EXPECT_TRUE(opt_list.empty());
+}
+
+TEST(NbHttpRequest, GetHttpOptionsSome) {
+    std::list<string> headers;
+
+    string body{"message body"};
+    NbHttpOptions opts;
+    opts.SslCert("/tmp/cert.pem")
+        .SslCertType("PEM")
+        .SslCertPasswd("passwd");
+
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty, opts);
+
+    std::list<std::shared_ptr<curlpp::OptionBase>> opt_list = request.GetHttpOptions();
+    EXPECT_EQ(opt_list.size(), 3);
+    auto iter = std::find_if(opt_list.begin(), opt_list.end(), [](std::shared_ptr<curlpp::OptionBase> &x) {
+        auto *p = dynamic_cast<curlpp::Options::SslCert *>(x.get());
+        return p != nullptr && p->getValue() == "/tmp/cert.pem";
+    });
+    EXPECT_NE(iter, opt_list.end());
+    iter = std::find_if(opt_list.begin(), opt_list.end(), [](std::shared_ptr<curlpp::OptionBase> &x) {
+        auto *p = dynamic_cast<curlpp::Options::SslCertType *>(x.get());
+        return p != nullptr && p->getValue() == "PEM";
+    });
+    EXPECT_NE(iter, opt_list.end());
+    iter = std::find_if(opt_list.begin(), opt_list.end(), [](std::shared_ptr<curlpp::OptionBase> &x) {
+        auto *p = dynamic_cast<curlpp::Options::SslCertPasswd *>(x.get());
+        return p != nullptr && p->getValue() == "passwd";
+    });
+    EXPECT_NE(iter, opt_list.end());
 }
 
 static int CountString(const string &str, const string &search) {
@@ -46,8 +90,9 @@ TEST(NbHttpRequest, DumpHeaderNone) {
     std::list<string> headers;
 
     string body{"message body"};
+    NbHttpOptions opts;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty, opts);
 
     NbLogger::SetRestLogEnabled(true);
 
@@ -68,8 +113,9 @@ TEST(NbHttpRequest, DumpApplicationJson) {
     headers.push_back("Content-Type: application/json");
 
     string body{"message body"};
+    NbHttpOptions opts;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty, opts);
 
     NbLogger::SetRestLogEnabled(true);
 
@@ -90,8 +136,9 @@ TEST(NbHttpRequest, DumpTextPlain) {
     headers.push_back("X-HEADER-KEY2: 123456");
 
     string body{"message body"};
+    NbHttpOptions opts;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty, opts);
 
     NbLogger::SetRestLogEnabled(true);
 
@@ -112,8 +159,9 @@ TEST(NbHttpRequest, DumpTextHtml) {
     headers.push_back("X-HEADER-KEY2: 123456");
 
     string body{"message body"};
+    NbHttpOptions opts;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty, opts);
 
     NbLogger::SetRestLogEnabled(true);
 
@@ -132,8 +180,9 @@ TEST(NbHttpRequest, DumpTextXml) {
     headers.push_back("Content-Type: text/xml");
 
     string body{"message body"};
+    NbHttpOptions opts;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty, opts);
 
     NbLogger::SetRestLogEnabled(true);
 
@@ -154,8 +203,9 @@ TEST(NbHttpRequest, DumpImageJpeg) {
     headers.push_back("Content-Type: image/jpeg");
 
     string body{"message body"};
+    NbHttpOptions opts;
 
-    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty);
+    NbHttpRequest request(kUrl, NbHttpRequestMethod::HTTP_REQUEST_TYPE_GET, headers, body, kEmpty, opts);
 
     NbLogger::SetRestLogEnabled(true);
 

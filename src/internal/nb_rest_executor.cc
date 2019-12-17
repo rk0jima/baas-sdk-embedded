@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 NEC Corporation
+ * Copyright (C) 2017-2019 NEC Corporation
  */
 
 #include "necbaas/internal/nb_rest_executor.h"
@@ -248,6 +248,11 @@ void NbRestExecutor::SetOptCommon(const NbHttpRequest &request, NbHttpHandler &h
     // Proxy設定
     // 空文字でも設定する(明示的にProxy未使用)
     curlpp_easy_.setOpt(new curlpp::Options::Proxy(request.GetProxy()));
+
+    // CURLオプション設定
+    for (const auto &opt: request.GetHttpOptions()) {
+        curlpp_easy_.setOpt(opt->clone());
+    }
 
     // タイムアウト設定
     curlpp_easy_.setOpt(new curlpp::Options::Timeout(timeout < 0 ? kRestTimeoutDefault : timeout));

@@ -1,11 +1,12 @@
 /*
- * Copyright (C) 2017 NEC Corporation
+ * Copyright (C) 2017-2019 NEC Corporation
  */
 
 #include "necbaas/internal/nb_http_request_factory.h"
 #include <curlpp/cURLpp.hpp>
 #include "necbaas/internal/nb_constants.h"
 #include "necbaas/internal/nb_logger.h"
+#include "necbaas/nb_http_options.h"
 
 namespace necbaas {
 
@@ -14,13 +15,15 @@ using std::list;
 using std::multimap;
 
 NbHttpRequestFactory::NbHttpRequestFactory(const string &end_point_url, const string &tenant_id, const string &app_id,
-                                           const string &app_key, const string &session_token, const string &proxy)
+                                           const string &app_key, const string &session_token, const string &proxy,
+                                           const NbHttpOptions &http_options)
     : end_point_url_(end_point_url),
       tenant_id_(tenant_id),
       app_id_(app_id),
       app_key_(app_key),
       session_token_(session_token),
-      proxy_(proxy) {
+      proxy_(proxy),
+      http_options_(http_options) {
     CheckParameter();
 }
 
@@ -118,7 +121,7 @@ NbHttpRequest NbHttpRequestFactory::Build() {
         }
     }
 
-    return NbHttpRequest(url, request_method_, header_list, body_, proxy_);
+    return NbHttpRequest(url, request_method_, header_list, body_, proxy_, http_options_);
 }
 
 NbResultCode NbHttpRequestFactory::GetError() const { return error_; }

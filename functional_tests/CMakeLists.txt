@@ -33,6 +33,7 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/nb_file_bucket_ft.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/nb_file_bucket_ft_m.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/nb_api_gateway_ft.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/nb_http_options_ft.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/durbility_ft.cc
     )
 

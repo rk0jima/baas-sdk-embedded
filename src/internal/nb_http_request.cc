@@ -1,10 +1,11 @@
 /*
- * Copyright (C) 2017 NEC Corporation
+ * Copyright (C) 2017-2019 NEC Corporation
  */
 
 #include "necbaas/internal/nb_http_request.h"
 #include "necbaas/internal/nb_logger.h"
 #include "necbaas/internal/nb_constants.h"
+#include "necbaas/nb_http_options.h"
 
 namespace necbaas {
 
@@ -13,8 +14,8 @@ using std::list;
 using std::vector;
 
 NbHttpRequest::NbHttpRequest(const string &url, const NbHttpRequestMethod &method, const list<string> &headers,
-                             const string &body, const string &proxy)
-    : url_(url), method_(method), headers_(headers), body_(body), proxy_(proxy) {}
+                             const string &body, const string &proxy, const NbHttpOptions &http_options)
+    : url_(url), method_(method), headers_(headers), body_(body), proxy_(proxy), http_options_(http_options) {}
 
 NbHttpRequest::~NbHttpRequest() {}
 
@@ -27,6 +28,14 @@ const list<string> &NbHttpRequest::GetHeaders() const { return headers_; }
 const string &NbHttpRequest::GetBody() const { return body_; }
 
 const string &NbHttpRequest::GetProxy() const { return proxy_; }
+
+std::list<std::shared_ptr<curlpp::OptionBase>> NbHttpRequest::GetHttpOptions() const {
+    std::list<std::shared_ptr<curlpp::OptionBase>> options;
+    for (const auto &pair: http_options_.GetOptions()) {
+        options.push_back(pair.second);
+    }
+    return options;
+}
 
 void NbHttpRequest::Dump() const {
     if (!NbLogger::IsRestLogEnabled()) {

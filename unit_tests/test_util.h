@@ -2,6 +2,7 @@
 #define NECBAAS_TESTUTIL_H
 
 #include "necbaas/internal/nb_http_request_factory.h"
+#include "necbaas/nb_http_options.h"
 
 namespace necbaas {
 // テストユーティリティクラス
@@ -31,6 +32,10 @@ class TestUtil {
 
     static const std::string &NbHttpRequestFactory_GetProxy(const NbHttpRequestFactory &factory) {
         return factory.proxy_;
+    }
+
+    static const std::map<CURLoption, std::shared_ptr<curlpp::OptionBase>> NbHttpOptions_GetOptions(const NbHttpOptions &options) {
+        return options.GetOptions();
     }
 };
 }//namespace necbaas

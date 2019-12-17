@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "necbaas/internal/nb_http_request_factory.h"
+#include <curlpp/Options.hpp>
 
 namespace necbaas {
 
@@ -15,6 +16,8 @@ const string kPath{"apiPath"};
 const string kBody{"body"};
 
 const string kEmpty{""};
+
+const NbHttpOptions kOpts = NbHttpOptions().SslCert("cert.pem");
 
 string MakeUrl(const string &end_point_url, const string &tenant_id, const string &path, const string &url_params) {
     return end_point_url + "1/" + tenant_id + path + url_params;
@@ -59,7 +62,7 @@ std::multimap<std::string, std::string> GetHeaders(const std::list<string> &head
 //ヘッダ追加：なし
 //ボディ：なし
 TEST(NbHttpRequestFactory, Get) {
-    NbHttpRequestFactory factory(kEndPointUrl, kTenantId, kAppId, kAppKey, kSessionToken, kProxy);
+    NbHttpRequestFactory factory(kEndPointUrl, kTenantId, kAppId, kAppKey, kSessionToken, kProxy, kOpts);
 
     EXPECT_FALSE(factory.IsError());
     
@@ -75,6 +78,8 @@ TEST(NbHttpRequestFactory, Get) {
     EXPECT_EQ("baas embedded sdk", headers.find("User-Agent")->second);
     EXPECT_TRUE(request.GetBody().empty());
     EXPECT_EQ(kProxy, request.GetProxy());
+    EXPECT_EQ(1, request.GetHttpOptions().size());
+    EXPECT_EQ("cert.pem", dynamic_cast<curlpp::Options::SslCert *>(request.GetHttpOptions().front().get())->getValue());
 }
 
 //NbHttpRequestFactory Put
@@ -89,7 +94,7 @@ TEST(NbHttpRequestFactory, Get) {
 //ヘッダ追加：なし
 //ボディ：あり
 TEST(NbHttpRequestFactory, Put) {
-    NbHttpRequestFactory factory(kEndPointUrl, kTenantId, kAppId, kAppKey, kEmpty, kEmpty);
+    NbHttpRequestFactory factory(kEndPointUrl, kTenantId, kAppId, kAppKey, kEmpty, kEmpty, kOpts);
 
     EXPECT_FALSE(factory.IsError());
 
@@ -116,6 +121,8 @@ TEST(NbHttpRequestFactory, Put) {
     EXPECT_EQ("abcdef", headers.find("X-HEADER-KEY")->second);
     EXPECT_EQ(kBody, request.GetBody());
     EXPECT_EQ(kEmpty, request.GetProxy());
+    EXPECT_EQ(1, request.GetHttpOptions().size());
+    EXPECT_EQ("cert.pem", dynamic_cast<curlpp::Options::SslCert *>(request.GetHttpOptions().front().get())->getValue());
 }
 
 //NbHttpRequestFactory Post
@@ -130,7 +137,7 @@ TEST(NbHttpRequestFactory, Put) {
 //ヘッダ追加：あり
 //ボディ：あり
 TEST(NbHttpRequestFactory, Post) {
-    NbHttpRequestFactory factory(kEndPointUrl + "/", kTenantId, kAppId, kAppKey, kSessionToken, kEmpty);
+    NbHttpRequestFactory factory(kEndPointUrl + "/", kTenantId, kAppId, kAppKey, kSessionToken, kEmpty, kOpts);
 
     EXPECT_FALSE(factory.IsError());
 
@@ -153,6 +160,8 @@ TEST(NbHttpRequestFactory, Post) {
     EXPECT_EQ("abcdef", headers.find("X-HEADER-KEY")->second);
     EXPECT_EQ(kBody, request.GetBody());
     EXPECT_EQ(kEmpty, request.GetProxy());
+    EXPECT_EQ(1, request.GetHttpOptions().size());
+    EXPECT_EQ("cert.pem", dynamic_cast<curlpp::Options::SslCert *>(request.GetHttpOptions().front().get())->getValue());
 }
 
 //NbHttpRequestFactory Delete
@@ -167,7 +176,7 @@ TEST(NbHttpRequestFactory, Post) {
 //ヘッダ追加：あり（Key重複）
 //ボディ：あり
 TEST(NbHttpRequestFactory, Delete) {
-    NbHttpRequestFactory factory(kEndPointUrl, kTenantId, kAppId, kAppKey, kSessionToken, kEmpty);
+    NbHttpRequestFactory factory(kEndPointUrl, kTenantId, kAppId, kAppKey, kSessionToken, kEmpty, kOpts);
 
     EXPECT_FALSE(factory.IsError());
 
@@ -204,6 +213,8 @@ TEST(NbHttpRequestFactory, Delete) {
     EXPECT_EQ("key-2-2", iterator->second);
     EXPECT_EQ(kBody, request.GetBody());
     EXPECT_EQ(kEmpty, request.GetProxy());
+    EXPECT_EQ(1, request.GetHttpOptions().size());
+    EXPECT_EQ("cert.pem", dynamic_cast<curlpp::Options::SslCert *>(request.GetHttpOptions().front().get())->getValue());
 }
 
 //NbHttpRequestFactory
@@ -212,7 +223,7 @@ TEST(NbHttpRequestFactory, Delete) {
 //ヘッダ：あり（Key or Valueが空文字）
 //ヘッダ追加：あり（Key or Valueが空文字）
 TEST(NbHttpRequestFactory, EmptyParam) {
-    NbHttpRequestFactory factory(kEndPointUrl, kTenantId, kAppId, kAppKey, kSessionToken, kEmpty);
+    NbHttpRequestFactory factory(kEndPointUrl, kTenantId, kAppId, kAppKey, kSessionToken, kEmpty, kOpts);
 
     EXPECT_FALSE(factory.IsError());
 
@@ -244,11 +255,13 @@ TEST(NbHttpRequestFactory, EmptyParam) {
     EXPECT_EQ("baas embedded sdk", headers.find("User-Agent")->second);
     EXPECT_EQ(kBody, request.GetBody());
     EXPECT_EQ(kEmpty, request.GetProxy());
+    EXPECT_EQ(1, request.GetHttpOptions().size());
+    EXPECT_EQ("cert.pem", dynamic_cast<curlpp::Options::SslCert *>(request.GetHttpOptions().front().get())->getValue());
 }
 
 //NbHttpRequestFactory User-Agent ヘッダあり
 TEST(NbHttpRequestFactory, UserAgent) {
-    NbHttpRequestFactory factory(kEndPointUrl, kTenantId, kAppId, kAppKey, kEmpty, kEmpty);
+    NbHttpRequestFactory factory(kEndPointUrl, kTenantId, kAppId, kAppKey, kEmpty, kEmpty, kOpts);
 
     EXPECT_FALSE(factory.IsError());
 
@@ -274,26 +287,28 @@ TEST(NbHttpRequestFactory, UserAgent) {
     EXPECT_EQ("test user agent", headers.find("User-Agent")->second);
     EXPECT_EQ(kBody, request.GetBody());
     EXPECT_EQ(kEmpty, request.GetProxy());
+    EXPECT_EQ(1, request.GetHttpOptions().size());
+    EXPECT_EQ("cert.pem", dynamic_cast<curlpp::Options::SslCert *>(request.GetHttpOptions().front().get())->getValue());
 }
 
 //NbHttpRequestFactory IsError
 TEST(NbHttpRequestFactory, IsError) {
-    NbHttpRequestFactory *factory = new NbHttpRequestFactory(kEmpty, kTenantId, kAppId, kAppKey, kSessionToken, kProxy);
+    NbHttpRequestFactory *factory = new NbHttpRequestFactory(kEmpty, kTenantId, kAppId, kAppKey, kSessionToken, kProxy, kOpts);
     EXPECT_TRUE(factory->IsError());
     EXPECT_EQ(NbResultCode::NB_ERROR_ENDPOINT_URL, factory->GetError());
     delete factory;
 
-    factory = new NbHttpRequestFactory(kEndPointUrl, kEmpty, kAppId, kAppKey, kSessionToken, kProxy);
+    factory = new NbHttpRequestFactory(kEndPointUrl, kEmpty, kAppId, kAppKey, kSessionToken, kProxy, kOpts);
     EXPECT_TRUE(factory->IsError());
     EXPECT_EQ(NbResultCode::NB_ERROR_TENANT_ID, factory->GetError());
     delete factory;
 
-    factory = new NbHttpRequestFactory(kEndPointUrl, kTenantId, kEmpty, kAppKey, kSessionToken, kProxy);
+    factory = new NbHttpRequestFactory(kEndPointUrl, kTenantId, kEmpty, kAppKey, kSessionToken, kProxy, kOpts);
     EXPECT_TRUE(factory->IsError());
     EXPECT_EQ(NbResultCode::NB_ERROR_APP_ID, factory->GetError());
     delete factory;
 
-    factory = new NbHttpRequestFactory(kEndPointUrl, kTenantId, kAppId, kEmpty, kSessionToken, kProxy);
+    factory = new NbHttpRequestFactory(kEndPointUrl, kTenantId, kAppId, kEmpty, kSessionToken, kProxy, kOpts);
     EXPECT_TRUE(factory->IsError());
     EXPECT_EQ(NbResultCode::NB_ERROR_APP_KEY, factory->GetError());
     delete factory;

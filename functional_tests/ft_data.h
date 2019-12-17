@@ -61,5 +61,21 @@ extern const std::string kNoAclObjectBucketName;
 
 // 空文字
 extern const std::string kEmpty;
+
+namespace ssl {
+extern const std::string kEndPointUrl;
+
+extern const std::string kTenantId;
+extern const std::string kAppId;
+extern const std::string kAppKey;
+extern const std::string kMasterKey;
+extern const std::string kProxy;
+
+extern const std::string kSslCertFile;
+extern const std::string kSslKeyFile;
+extern const std::string kSslCaCertFile;
+extern const std::string kSslCaCertDir;
+} //namespace ssl
+
 } //namespace necbaas
 #endif //NECBAAS_FTDATA_H

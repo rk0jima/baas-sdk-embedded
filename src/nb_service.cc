@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 NEC Corporation
+ * Copyright (C) 2017-2019 NEC Corporation
  */
 
 #include "necbaas/nb_service.h"
@@ -35,7 +35,7 @@ void NbService::SetRestLogEnabled(bool flag) {
 // コンストラクタ
 NbService::NbService(const string &endpoint_url, const string &tenant_id, const string &app_id,
                      const string &app_key, const string &proxy)
-        : endpoint_url_(endpoint_url), tenant_id_(tenant_id), app_id_(app_id), app_key_(app_key), proxy_(proxy) {
+        : endpoint_url_(endpoint_url), tenant_id_(tenant_id), app_id_(app_id), app_key_(app_key), proxy_(proxy), http_options_() {
     // curl_global_init()がスレッドセーフでないため、排他する
     std::lock_guard<std::mutex> lock(mutex_curl);
     curlpp::initialize();
@@ -83,6 +83,10 @@ void NbService::ClearSessionToken() {
     session_token_.ClearSessionToken();
 }
 
+void NbService::SetHttpOptions(const NbHttpOptions &options) {
+    http_options_ = options;
+}
+
 NbRestExecutor *NbService::PopRestExecutor() {
     return rest_executor_pool_.PopRestExecutor();
 }
@@ -94,7 +98,7 @@ void NbService::PushRestExecutor(NbRestExecutor *executor) {
 NbHttpRequestFactory NbService::GetHttpRequestFactory() {
     std::lock_guard<std::mutex> lock(session_token_mutex_);
     return NbHttpRequestFactory(endpoint_url_, tenant_id_, app_id_, app_key_,
-                                session_token_.GetSessionToken(), proxy_);
+                                session_token_.GetSessionToken(), proxy_, http_options_);
 }
 
 NbResult<NbHttpResponse> NbService::ExecuteCommon(
